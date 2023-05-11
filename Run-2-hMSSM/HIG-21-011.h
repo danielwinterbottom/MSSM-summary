@@ -4,29 +4,29 @@
 
 TGraph* HIG_21_011_obs(bool filled){
   TGraph* graph = new TGraph();
-  graph->SetPoint( 0, 255.02, 4.44);
-  graph->SetPoint( 1, 276.02, 4.68);
-  graph->SetPoint( 2, 296.82, 4.98);
-  graph->SetPoint( 3, 316.87, 4.80);
-  graph->SetPoint( 4, 345.90, 3.92);
-  graph->SetPoint( 5, 442.48, 2.40);
-  graph->SetPoint( 6, 450.00, 1.00);
+  graph->SetPoint( 0, 256.82, 5.56);
+  graph->SetPoint( 1, 277.42, 5.84);
+  graph->SetPoint( 2, 297.79, 6.22);
+  graph->SetPoint( 3, 317.88, 5.86);
+  graph->SetPoint( 4, 347.34, 4.91);
+  graph->SetPoint( 5, 446.30, 3.52);
+  graph->SetPoint( 6, 527.22, 1.04);
   if(filled){
-    graph->SetPoint(7, 450.00, 0.40);
-    graph->SetPoint(8, 255.02, 0.40);
-    graph->SetPoint(9, 255.02, 4.44);
+    graph->SetPoint(7, 527.22, 0.40);
+    graph->SetPoint(8, 256.82, 0.40);
+    graph->SetPoint(9, 256.82, 5.56);
   }
   return graph;
 }
 
 TGraph* HIG_21_011_exp(){
   TGraph* graph = new TGraph();
-  graph->SetPoint( 0, 255.53, 4.68);
-  graph->SetPoint( 1, 275.89, 4.61);
-  graph->SetPoint( 2, 295.78, 4.31);
-  graph->SetPoint( 3, 315.96, 4.21);
-  graph->SetPoint( 4, 346.50, 4.26);
-  graph->SetPoint( 5, 439.88, 2.03);
-  graph->SetPoint( 6, 450.00, 1.00);
+  graph->SetPoint( 0, 257.10, 5.82);
+  graph->SetPoint( 1, 277.36, 5.76);
+  graph->SetPoint( 2, 297.28, 5.39);
+  graph->SetPoint( 3, 317.36, 5.24);
+  graph->SetPoint( 4, 347.67, 5.25);
+  graph->SetPoint( 5, 445.36, 3.12);
+  graph->SetPoint( 6, 535.03, 1.38);
   return graph;
 }
