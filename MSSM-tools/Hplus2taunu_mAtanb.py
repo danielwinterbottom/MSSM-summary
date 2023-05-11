@@ -3,10 +3,10 @@ import csv
 # estimated with 921 pb
 import mssm_xs_tools 
 mssm = mssm_xs_tools.mssm_xs_tools(b"root_files/mh125_13.root", True, 0)
-def lowmass_Hptaunu(mA, tb):
-    return 921.*mssm.br(b"t->Hpb", mssm.mass(b"Hp", mA, tb), tb)*mssm.br(b"Hp->taunu", mssm.mass(b"Hp", mA, tb), tb)
-def highmass_Hptaunu(mA, tb): 
-    return mssm.xsec(b"pp->Hp", mssm.mass(b"Hp", mA, tb), tb)*mssm.br(b"Hp->taunu", mssm.mass(b"Hp", mA, tb), tb)
+def lowmass_Hptaunu(mHp, tb):
+    return 2*921.*mssm.br(b"t->Hpb", mHp, tb)*mssm.br(b"Hp->taunu", mHp, tb)
+def highmass_Hptaunu(mHp, tb): 
+    return 2*mssm.xsec(b"pp->Hp", mHp, tb)*mssm.br(b"Hp->taunu", mHp, tb)
 def mHp2mA(mHp, tb):
     return mssm.mass2mA(b"Hp", mHp, tb)
 # Set up the scan
@@ -24,10 +24,10 @@ def recast_limits(source, target, mass_column, limit_column):
             mHp = float(l[mass_column])
             if mHp<=180:
                 contour.append(mA_tanb_scan(float(l[limit_column]), mHp, 
-                mHp2mA, lowmass_Hptaunu, start, stop, step))
+                mHp2mA, lowmass_Hptaunu, start, stop, step, lockmX=True))
             else:
                 contour.append(mA_tanb_scan(float(l[limit_column]), mHp, 
-                mHp2mA, highmass_Hptaunu, start, stop, step))
+                mHp2mA, highmass_Hptaunu, start, stop, step, lockmX=True))
     # Write
     with open(target, mode="w") as f:
         w=csv.writer(f, delimiter=",")
@@ -39,4 +39,3 @@ def recast_limits(source, target, mass_column, limit_column):
 if __name__=="__main__":
     recast_limits("./csv_files/HIG-18-014_obs.csv", "./csv_files/HIG-18-014_mAtanb_obs.csv", "mX", "limit")
     recast_limits("./csv_files/HIG-18-014_exp.csv", "./csv_files/HIG-18-014_mAtanb_exp.csv", "mX", "limit")
-
