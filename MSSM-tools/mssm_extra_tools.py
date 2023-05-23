@@ -69,11 +69,11 @@ def mA_tanb_scan(obs, mX, mX2mA, model, start=0.5, stop=60., step_size=0.5, lock
         if not lockmX:
             mA   = mX2mA(mX, tb)
         pred = model(mA, tb)
-        if verbose:
-            print(mA, tb, pred, obs)
         if not __last_diff__==0:
             if (pred-obs)*__last_diff__<0: 
                 tanb=__last_tanb__+(__last_diff__)/(__last_diff__+obs-pred)*(tb-__last_tanb__)
+                if verbose:
+                    print(mA, tb, pred, mX, obs)
                 return (mX2mA(mX, tanb), tanb)
         if pred>0:
             __last_diff__= pred-obs

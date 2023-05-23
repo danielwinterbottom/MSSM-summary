@@ -2,8 +2,9 @@
 #include "HIG-16-018.h"
 #include "HIG-18-010.h"
 #include "HIG-20-016.h"
-#include "HIG-21-011.h"
 #include "HIG-21-001.h"
+#include "HIG-21-005.h"
+#include "HIG-21-011.h"
 #include "Eligibility.h"
 
 void MSSM_limits_mh125(){
@@ -55,8 +56,10 @@ void MSSM_limits_mh125(){
   TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
   leg0_->AddEntry(g4, "#splitline{H #rightarrow WW(2l2#nu)}{(HIG-20-016)^{#scale[1.6]{ #club}}}", "F");
   TGraph* g5 = Contour(HIG_21_011_exp, HIG_21_011_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g5 , "#splitline{H #rightarrow hh (bb#gamma#gamma)}{HIG-21-011^{#scale[1.6]{ #club}}}", "F");
-  
+  leg0_->AddEntry(g5 , "#splitline{H #rightarrow hh (bb#gamma#gamma)}{(HIG-21-011)^{#scale[1.6]{ #club}}}", "F");
+  TGraph* g6 = Contour(HIG_21_005_exp, HIG_21_005_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
+  leg0_->AddEntry(g6 , "#splitline{H #rightarrow hh (bbWW)}{(HIG-21-005)^{#scale[1.6]{ #club}}}", "F");
+    
   TGraph* dummy = new TGraph();  
   dummy->SetFillColor(kWhite);
   dummy->SetLineColor(kWhite);

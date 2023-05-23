@@ -4,13 +4,12 @@
 mh         = 125.4                  # Observed H(125) mass
 br_hgamgam = 2.27e-3                # BR(H(125)->gammagamma)
 br_hbb     = 5.76e-1                # BR(H(125)->bb)
-br_WW2l2n  = 2.203e-1*1.086e-1**2   # BR(H(125)->W(lnu)W(lnu)
 fb2pb      = 1e-3                   # Translation fb->pb
 
 import csv
 # Set up the model
 import mssm_xs_tools 
-mssm = mssm_xs_tools.mssm_xs_tools(b"root_files/hMSSM_13.root", True, 0)
+mssm = mssm_xs_tools.mssm_xs_tools(b"root_files/mh125_13.root", True, 0)
 def ggHhh(mA, tb): 
     return mssm.xsec(b"gg->H", mA, tb)*mssm.br(b"H->hh", mA, tb)
 def mH2mA(mX, tb):
@@ -20,15 +19,26 @@ start = 60
 stop  = 0.5
 step  =-0.5
 
-def recast_limits(source, target, mass_column, limit_column): 
+def recast_limits(source, target, mass_column, limit_column, br_H1=1., br_H2=1): 
     # Read
     contour = []
     from mssm_extra_tools import mA_tanb_scan
     with open(source) as f:
         r=csv.DictReader(f, delimiter=",")
         for l in r:
-            contour.append(mA_tanb_scan(float(l[limit_column])/br_hgamgam/br_hbb/2.*fb2pb, float(l[mass_column]), 
-            mH2mA, ggHhh, start, stop, step))
+            OBS_LIMIT=float(l[limit_column])/2.*fb2pb/br_H1/br_H2
+            OBS_MASS=float(l[mass_column])
+            contour.append(
+                mA_tanb_scan(
+                    OBS_LIMIT, 
+                    OBS_MASS, 
+                    mH2mA, 
+                    ggHhh, 
+                    start, 
+                    stop, 
+                    step
+                    )
+                )
     # Write
     with open(target, mode="w") as f:
         w=csv.writer(f, delimiter=",")
@@ -38,6 +48,10 @@ def recast_limits(source, target, mass_column, limit_column):
                 w.writerow(l)
 
 if __name__=="__main__":
-    recast_limits("./csv_files/HIG-21-011_obs.csv", "./csv_files/HIG-21-011_mAtanb_obs.csv", "mX", "limit")
-    recast_limits("./csv_files/HIG-21-011_exp.csv", "./csv_files/HIG-21-011_mAtanb_exp.csv", "mX", "limit")
+    # HIG-21-011 is a limit on BR(X->H(gamgam)H(bb))
+    #recast_limits("./csv_files/HIG-21-011_obs.csv", "./csv_files/HIG-21-011_mAtanb_obs.csv", "mX", "limit", br_gamgam, br_bb)
+    #recast_limits("./csv_files/HIG-21-011_exp.csv", "./csv_files/HIG-21-011_mAtanb_exp.csv", "mX", "limit", br_gamgam, br_bb)
+    # HIG-21-005 is a limit on BR(X->HH)
+    recast_limits("./csv_files/HIG-21-005_obs.csv", "./csv_files/HIG-21-005_mAtanb_obs.csv", "mX", "limit")
+    recast_limits("./csv_files/HIG-21-005_exp.csv", "./csv_files/HIG-21-005_mAtanb_exp.csv", "mX", "limit")
 
