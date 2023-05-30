@@ -32,28 +32,33 @@ TColor* tComb    = new TColor(3011, .28, .58, .70, "tComb"    , 0.25);
 //  upper_limit : indicate whether these are upper/lower limits (for hatching)  
 // TGraph* of the observed limit contour is returned.
 TGraph* Contour(TGraph* exp(), TGraph* obs(bool), int dcolor, int lcolor, int tcolor, bool upper_limit=true){
-  TGraph* g0 = exp();
-  g0->SetLineColor(dcolor);
-  g0->SetLineWidth((upper_limit?+1:-1)*303);
-  g0->SetFillStyle(3004);
-  g0->SetFillColor(dcolor);
-  g0->SetLineStyle(1);
-  g0->Draw("Lsame");
-
-  TGraph* g1 = obs(true );
-  TGraph* g2 = obs(false);
-  g2->SetLineColor(lcolor);
-  g2->SetLineStyle(1);
-  g2->SetLineWidth(1);
-  g2->SetMarkerStyle(20);
-  g2->SetMarkerSize(0.7);
-  g2->SetMarkerColor(lcolor);
-  g1->SetLineColor(lcolor);
-  g1->SetFillColor(tcolor);
-  g1->SetFillStyle(1001);
-  g1->Draw("Fsame");
-  g2->Draw("Lsame");
-  return g1;
+  TGraph* g0=0; 
+  TGraph* g1=0;
+  if(exp){
+    g0 = exp();
+    g0->SetLineColor(dcolor);
+    g0->SetLineWidth((upper_limit?+1:-1)*303);
+    g0->SetFillStyle(3004);
+    g0->SetFillColor(dcolor);
+    g0->SetLineStyle(1);
+    g0->Draw("Lsame");
+  }
+  if(obs){
+    g1 = obs(true );
+    TGraph* g2 = obs(false);
+    g2->SetLineColor(lcolor);
+    g2->SetLineStyle(1);
+    g2->SetLineWidth(1);
+    g2->SetMarkerStyle(20);
+    g2->SetMarkerSize(0.7);
+    g2->SetMarkerColor(lcolor);
+    g1->SetLineColor(lcolor);
+    g1->SetFillColor(tcolor);
+    g1->SetFillStyle(1001);
+    g1->Draw("Fsame");
+    g2->Draw("Lsame");
+  }
+  return g1 ? g1 : g0;
 }
 
 // Canvas for a squared central figure with legend to the right including "CMS and lumi" tag
