@@ -9,6 +9,15 @@ def scale2mobs(mh, prod, decay, mobs=125.36, xs_path="./csv_files/SM_xs_13TeV.cs
     """
     Scale xsec*BR prediction for mh to mobs=125.4 GeV
     
+    mh      : value of mh as returned from model
+    prod    : production mode in LHC HWG naming convention
+    decay   : decay channel in LHC HWG naming convention
+    xs_path : path to inputs for SM cross section predictions 
+    br_path : path to inputs for SM branching fraction predictions
+    
+    if <decay> is None the branching fraction scale will be ignored and only 
+    the cross section scale will be applied.
+       
     Following recomendations as given in 
     https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHWGMSSMNeutral#Adjusting_BSM_predictions_for_SM 
     """
@@ -24,9 +33,10 @@ def scale2mobs(mh, prod, decay, mobs=125.36, xs_path="./csv_files/SM_xs_13TeV.cs
     # Scale factor for cross section (xs)
     x,y = brace(xs_path, x_name="mH", y_name=prod, m=mh)
     scale*=linpol(x,y,mh)/linpol(x,y,mobs)
-    # Scale factor for branching fraction (br)
-    x,y = brace(br_path, x_name="mH", y_name=decay, m=mh)
-    scale*=linpol(x,y,mh)/linpol(x,y,mobs)
+    if not decay.lower()=="none":
+        # Scale factor for branching fraction (br)
+        x,y = brace(br_path, x_name="mH", y_name=decay, m=mh)
+        scale*=linpol(x,y,mh)/linpol(x,y,mobs)
     return scale
 
 def mA_tanb_scan(obs, mX, mX2mA, model, start=0.5, stop=60., step_size=0.5, lockmX=False, verbose=False):
