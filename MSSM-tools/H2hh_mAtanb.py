@@ -9,7 +9,7 @@ fb2pb      = 1e-3                   # Translation fb->pb
 import csv
 # Set up the model
 import mssm_xs_tools 
-mssm = mssm_xs_tools.mssm_xs_tools(b"root_files/mh125_13.root", True, 0)
+mssm = mssm_xs_tools.mssm_xs_tools(b"root_files/mh125EFT_13.root", True, 0)
 def ggHhh(mA, tb): 
     return mssm.xsec(b"gg->H", mA, tb)*mssm.br(b"H->hh", mA, tb)
 def mH2mA(mX, tb):
@@ -19,7 +19,7 @@ start = 60
 stop  = 0.5
 step  =-0.5
 
-def recast_limits(source, target, mass_column, limit_column, br_H1=1., br_H2=1): 
+def recast_limits(source, target, mass_column, limit_column, br_H1=1., br_H2=1.): 
     # Read
     contour = []
     from mssm_extra_tools import mA_tanb_scan
@@ -52,6 +52,9 @@ if __name__=="__main__":
     #recast_limits("./csv_files/HIG-21-011_obs.csv", "./csv_files/HIG-21-011_mAtanb_obs.csv", "mX", "limit", br_gamgam, br_bb)
     #recast_limits("./csv_files/HIG-21-011_exp.csv", "./csv_files/HIG-21-011_mAtanb_exp.csv", "mX", "limit", br_gamgam, br_bb)
     # HIG-21-005 is a limit on BR(X->HH)
-    recast_limits("./csv_files/HIG-21-005_obs.csv", "./csv_files/HIG-21-005_mAtanb_obs.csv", "mX", "limit")
-    recast_limits("./csv_files/HIG-21-005_exp.csv", "./csv_files/HIG-21-005_mAtanb_exp.csv", "mX", "limit")
+    #recast_limits("./csv_files/HIG-21-005_obs.csv", "./csv_files/HIG-21-005_mAtanb_obs.csv", "mX", "limit")
+    #recast_limits("./csv_files/HIG-21-005_exp.csv", "./csv_files/HIG-21-005_mAtanb_exp.csv", "mX", "limit")
+    #recast_limits("./csv_files/B2G-23-002_obs.csv", "./csv_files/HIG-23-002_mAtanb_obs.csv", "mX", "limit")
+    # B2G-23-002 HH combination --> a limit on BR(X->HH)
+    recast_limits("./csv_files/B2G-23-002_exp.csv", "./csv_files/B2G-23-002_mAtanb_exp.csv", "mX", "limit")
 
