@@ -49,17 +49,17 @@ void MSSM_limits_mh125EFT(){
 
   /*-------------------------------------------------------------------------*/ 
   TGraph* g1 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
-  leg0_->AddEntry(g1, "#splitline{A/H/h #rightarrow #tau#tau}{arxiv:2208.02717^{#scale[1.6]{ #club}}}", "F");
+  leg0_->AddEntry(g1, "#splitline{#phi #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
   TGraph* g2 = Contour(HIG_17_033_exp, HIG_17_033_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
   leg0_->AddEntry(g2, "#splitline{H #rightarrow WW}{JHEP 03 (2020) 34}", "F");
-  TGraph* g3 = Contour(HIG_18_023_exp, HIG_18_023_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g3, "#splitline{A #rightarrow Zh(#tau#tau)}{JHEP 03 (2020) 65}", "F");
-  TGraph* g4 = Contour(HIG_18_005_exp, HIG_18_005_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
-  leg0_->AddEntry(g4, "#splitline{A #rightarrow Zh(bb)}{JHEP 06 (2019) 143}", "F");
+  TGraph* g3 = Contour(HIG_18_005_exp, HIG_18_005_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
+  leg0_->AddEntry(g3, "#splitline{A #rightarrow ZH(bb)}{EPJ C79 (2019) 564}", "F");
+  TGraph* g4 = Contour(HIG_18_023_exp, HIG_18_023_obs, kRed+2, kRed, tRed->GetNumber(), false); 
+  leg0_->AddEntry(g4, "#splitline{A #rightarrow ZH(#tau#tau)}{JHEP 03 (2020) 65}", "F");
   /*-------------------------------------------------------------------------*/ 
   /* Preview B2G-23-002                                                      */
   TGraph* g5 = Contour(B2G_23_002_exp, NULL, kYellow+2, kYellow, tYellow->GetNumber(), false); 
-  leg0_->AddEntry(g5 , "#splitline{h(125) (H#rightarrow hh)}{B2G-23-002^{#scale[1.6]{ #club}}}", "F");
+  leg0_->AddEntry(g5 , "#splitline{X#rightarrow HH}{B2G-23-002^{#scale[1.6]{ #club}}}", "F");
     
   TGraph* dummy = new TGraph();  
   dummy->SetFillColor(kWhite);

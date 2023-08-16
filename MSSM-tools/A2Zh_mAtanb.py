@@ -2,6 +2,8 @@
 # https://twiki.cern.ch/twiki/pub/LHCPhysics/LHCHWG/Higgs_XSBR_YR4_update.xlsx
 # https://cms-results.web.cern.ch/cms-results/public-results/publications/HIG-18-005/CMS-HIG-18-005_Figure_005-a.png
 br_hbb     = 5.76e-1                # BR(H(125)->bb)
+br_htautau = 6.208e-2               # BR(H(125)->tautau)
+br_Zll     = 6.73e-2                # BR(Z->ll)
 
 import csv
 # Set up the model
@@ -46,6 +48,9 @@ def recast_limits(source, target, mass_column, limit_column, br_h=1., br_Z=1.):
 
 if __name__=="__main__":
     # HIG-18-005 is a limit on BR(A->ZH(bb))
-    recast_limits("./csv_files/HIG-18-005_exp.csv", "./csv_files/HIG-18-005_mAtanb_exp.csv", "mX", "limit", br_h=br_hbb)
-    recast_limits("./csv_files/HIG-18-005_obs.csv", "./csv_files/HIG-18-005_mAtanb_obs.csv", "mX", "limit", br_h=br_hbb)
+    #recast_limits("./csv_files/HIG-18-005_exp.csv", "./csv_files/HIG-18-005_mAtanb_exp.csv", "mX", "limit", br_h=br_hbb)
+    #recast_limits("./csv_files/HIG-18-005_obs.csv", "./csv_files/HIG-18-005_mAtanb_obs.csv", "mX", "limit", br_h=br_hbb)
+    # HIG-18-023 is a limit in BR(A->Z(ll)H(tautau))
+    recast_limits("./csv_files/HIG-18-023_exp.csv", "./csv_files/HIG-18-023_mAtanb_exp.csv", "mX", "limit", br_h=br_htautau, br_Z=br_Zll*1000.)
+    recast_limits("./csv_files/HIG-18-023_obs.csv", "./csv_files/HIG-18-023_mAtanb_obs.csv", "mX", "limit", br_h=br_htautau, br_Z=br_Zll*1000.)
 
