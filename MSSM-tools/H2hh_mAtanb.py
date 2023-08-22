@@ -19,14 +19,14 @@ start = 60
 stop  = 0.5
 step  =-0.5
 
-def recast_limits(source, target, mass_column, limit_column, br_H1=1., br_H2=1.): 
+def recast_limits(source, target, mass_column, limit_column, br_H1=1., br_H2=1., HHambiguity=2.): 
     # Read
     contour = []
     from mssm_extra_tools import mA_tanb_scan
     with open(source) as f:
         r=csv.DictReader(f, delimiter=",")
         for l in r:
-            OBS_LIMIT=float(l[limit_column])/2.*fb2pb/br_H1/br_H2
+            OBS_LIMIT=float(l[limit_column])/HHambiguity*fb2pb/br_H1/br_H2
             OBS_MASS=float(l[mass_column])
             contour.append(
                 mA_tanb_scan(
@@ -55,6 +55,6 @@ if __name__=="__main__":
     #recast_limits("./csv_files/HIG-21-005_obs.csv", "./csv_files/HIG-21-005_mAtanb_obs.csv", "mX", "limit")
     #recast_limits("./csv_files/HIG-21-005_exp.csv", "./csv_files/HIG-21-005_mAtanb_exp.csv", "mX", "limit")
     #recast_limits("./csv_files/B2G-23-002_obs.csv", "./csv_files/HIG-23-002_mAtanb_obs.csv", "mX", "limit")
-    # B2G-23-002 HH combination --> a limit on BR(X->HH)
-    recast_limits("./csv_files/B2G-23-002_exp.csv", "./csv_files/B2G-23-002_mAtanb_exp.csv", "mX", "limit")
+    # B2G-23-002 HH combination --> a limit on BR(X->HH), HH ambiguity already taken into account upstream
+    recast_limits("./csv_files/B2G-23-002_exp.csv", "./csv_files/B2G-23-002_mAtanb_exp.csv", "mX", "limit", HHambiguity=1.)
 
