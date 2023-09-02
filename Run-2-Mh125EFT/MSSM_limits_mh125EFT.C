@@ -3,6 +3,7 @@
 #include "HIG-18-005.h"
 #include "HIG-18-023.h"
 #include "HIG-17-033.h"
+#include "HIG-20-016.h"
 #include "HIG-21-001.h"
 #include "Eligibility.h"
 
@@ -52,8 +53,10 @@ void MSSM_limits_mh125EFT(){
   leg0_->AddEntry(g1, "#splitline{#phi #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
   TGraph* g2 = Contour(HIG_17_033_exp, HIG_17_033_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
   leg0_->AddEntry(g2, "#splitline{H #rightarrow WW}{JHEP 03 (2020) 34}", "F");
-  TGraph* g3 = Contour(HIG_18_005_exp, HIG_18_005_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
-  leg0_->AddEntry(g3, "#splitline{A #rightarrow ZH(bb)}{EPJ C79 (2019) 564}", "F");
+  //TGraph* g2 = Contour(HIG_20_016_exp, HIG_20_016_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
+  //leg0_->AddEntry(g2, "#splitline{H #rightarrow WW(2l 2#nu)}{HIG-20-016^{#scale[1.6]{ #club}}}", "F");
+  //TGraph* g3 = Contour(HIG_18_005_exp, HIG_18_005_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
+  //leg0_->AddEntry(g3, "#splitline{A #rightarrow ZH(bb)}{EPJ C79 (2019) 564}", "F");
   TGraph* g4 = Contour(HIG_18_023_exp, HIG_18_023_obs, kRed+2, kRed, tRed->GetNumber(), false); 
   leg0_->AddEntry(g4, "#splitline{A #rightarrow ZH(#tau#tau)}{JHEP 03 (2020) 65}", "F");
   /*-------------------------------------------------------------------------*/ 
