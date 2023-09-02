@@ -51,8 +51,8 @@ void MSSM_limits_mh125(){
 
   /*-------------------------------------------------------------------------*/ 
   /* Preview HIG-22-001                                                      */
-  TGraph* g8 = Contour(HIG_22_001_hWW_exp, NULL, kYellow+2, kYellow, tYellow->GetNumber(), false); 
-  leg0_->AddEntry(g8 , "#splitline{h(125) (h#rightarrow WW)}{Nature 607 (2022) 60^{#scale[1.6]{ #club}}}", "F");
+  //TGraph* g8 = Contour(HIG_22_001_hWW_exp, NULL, kYellow+2, kYellow, tYellow->GetNumber(), false); 
+  //leg0_->AddEntry(g8 , "#splitline{h(125) (h#rightarrow WW)}{Nature 607 (2022) 60^{#scale[1.6]{ #club}}}", "F");
   /*-------------------------------------------------------------------------*/ 
   TGraph* g1 = Contour(HIG_18_010_exp, HIG_18_010_obs, kYellow+2, kYellow, tYellow->GetNumber(), true); 
   leg0_->AddEntry(g1, "#splitline{A/H/h #rightarrow #mu#mu}{PLB 798 (2019) 134922}", "F");
