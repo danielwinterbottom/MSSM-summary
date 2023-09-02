@@ -12,7 +12,6 @@
 #include "HIG-18-010.h"
 #include "HIG-18-005.h"
 #include "HIG-18-023.h"
-#include "../HIG-22-001-hMSSM/HIG-22-001/HIG-22-001_hWW.h"
 
 void MSSM_limits_hMSSM(){
 /*-----------------------------------------------------------------------------
@@ -46,29 +45,16 @@ void MSSM_limits_hMSSM(){
 -----------------------------------------------------------------------------*/
   TGraph* g1 = Contour(HIG_17_031_exp, HIG_17_031_obs, kCombDark->GetNumber(), kComb->GetNumber(), tComb->GetNumber(),false); 
   leg0_->AddEntry(g1 , "#splitline{h(125)}{EPJC 79 (2019) 421}", "F");
-  /*-------------------------------------------------------------------------*/ 
-  /* Preview HIG-22-001                                                      */
-  //TGraph* g8 = Contour(HIG_22_001_hWW_exp, NULL, kYellow+2, kYellow, tYellow->GetNumber(), false); 
-  //leg0_->AddEntry(g8 , "#splitline{h(125) (h#rightarrow WW)}{Nature 607 (2022) 60^{#scale[1.6]{ #club}}}", "F");
-  /*-------------------------------------------------------------------------*/ 
   TGraph* g2 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
   leg0_->AddEntry(g2, "#splitline{#phi #rightarrow #tau#tau}{arxiv:2208.02717^{#scale[1.6]{ #club}}}", "F");
   //TGraph* g3 = Contour(HIG_20_016_exp, HIG_20_016_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
   //leg0_->AddEntry(g3, "#splitline{H #rightarrow WW(2l2#nu)}{(HIG-20-016)^{#scale[1.6]{ #club}}}", "F");
   TGraph* g3 = Contour(HIG_17_033_exp, HIG_17_033_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
   leg0_->AddEntry(g3, "#splitline{H #rightarrow WW}{JHEP 03 (2020)}", "F");
-  //TGraph* g4 = Contour(HIG_21_011_exp, HIG_21_011_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  //leg0_->AddEntry(g4 , "#splitline{H #rightarrow hh (bb#gamma#gamma)}{(HIG-21-011)^{#scale[1.6]{ #club}}}", "F");
-  //TGraph* g5 = Contour(HIG_21_005_exp, HIG_21_005_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
-  //leg0_->AddEntry(g5 , "#splitline{H #rightarrow hh (bbWW)}{(HIG-21-005)^{#scale[1.6]{ #club}}}", "F");
-  //TGraph* g6 = Contour(HIG_18_005_exp, HIG_18_005_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
-  //leg0_->AddEntry(g6, "#splitline{A #rightarrow ZH(bb)}{EPJ C79 (2019) 564}", "F");
-  TGraph* g7 = Contour(HIG_18_023_exp, HIG_18_023_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g7, "#splitline{A #rightarrow ZH (ll#tau#tau)}{JHEP 03 (2020) 65}", "F");
-  //TGraph* g8 = Contour(HIG_17_027_exp, HIG_17_027_obs, kOrange+2, kOrange, tOrange->GetNumber(), false); 
-  //leg0_->AddEntry(g8, "#splitline{H/A #rightarrow tt}{JHEP 04 (2020) 171}", "F");
-  /*-------------------------------------------------------------------------*/ 
-  /* Preview B2G-23-002                                                      */
+  //TGraph* g4 = Contour(HIG_18_005_exp, HIG_18_005_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
+  //leg0_->AddEntry(g4, "#splitline{A #rightarrow ZH(bb)}{EPJ C79 (2019) 564}", "F");
+  TGraph* g5 = Contour(HIG_18_023_exp, HIG_18_023_obs, kRed+2, kRed, tRed->GetNumber(), false); 
+  leg0_->AddEntry(g5, "#splitline{A #rightarrow ZH (ll#tau#tau)}{JHEP 03 (2020) 65}", "F");
   TGraph* g8 = Contour(B2G_23_002_exp, NULL, kYellow+2, kYellow, tYellow->GetNumber(), false); 
   leg0_->AddEntry(g8 , "#splitline{X#rightarrow HH}{B2G-23-002^{#scale[1.6]{ #club}}}", "F");
 

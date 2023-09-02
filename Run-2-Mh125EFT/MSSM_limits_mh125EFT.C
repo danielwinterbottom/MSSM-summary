@@ -59,8 +59,6 @@ void MSSM_limits_mh125EFT(){
   //leg0_->AddEntry(g3, "#splitline{A #rightarrow ZH(bb)}{EPJ C79 (2019) 564}", "F");
   TGraph* g4 = Contour(HIG_18_023_exp, HIG_18_023_obs, kRed+2, kRed, tRed->GetNumber(), false); 
   leg0_->AddEntry(g4, "#splitline{A #rightarrow ZH(#tau#tau)}{JHEP 03 (2020) 65}", "F");
-  /*-------------------------------------------------------------------------*/ 
-  /* Preview B2G-23-002                                                      */
   TGraph* g5 = Contour(B2G_23_002_exp, NULL, kYellow+2, kYellow, tYellow->GetNumber(), false); 
   leg0_->AddEntry(g5 , "#splitline{X#rightarrow HH}{B2G-23-002^{#scale[1.6]{ #club}}}", "F");
     
