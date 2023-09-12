@@ -17,7 +17,7 @@ void MSSM_limits_mh125EFT(){
   // switch off stats box
   gStyle->SetOptStat(0);
   // define canvas  
-  TCanvas* canv = squared_legend_to_right(90., 1400., 1., 10.);
+  TCanvas* canv = squared_legend_to_right(90., 800., 1., 10.);
     // define legend
   TLegend* leg0_ = new TLegend(0.67, 0.10, 0.97, 0.94);
   leg0_->SetBorderSize(1);
