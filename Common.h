@@ -17,11 +17,12 @@ TColor* tBlue    = new TColor(3003,  0.,  0.,  1., "tBlue"    , 0.15);
 TColor* tMagenta = new TColor(3004,  1.,  0.,  1., "tMagenta" , 0.15);
 TColor* tCyan    = new TColor(3005,  0.,  1.,  1., "tCyan"    , 0.50);
 TColor* tYellow  = new TColor(3006,  1.,  1.,  0., "tYellow"  , 0.15);
-TColor* tOrange  = new TColor(3007,  1.,  .5,  0., "tOrange"  , 0.15);
-TColor* tBlack   = new TColor(3008,  0.,  0.,  0., "tBlack"   , 0.15);
-TColor* kCombDark= new TColor(3009, .48, .88,  1., "kCombDark");
-TColor* kComb    = new TColor(3010, .28, .58, .70, "kComb");
-TColor* tComb    = new TColor(3011, .28, .58, .70, "tComb"    , 0.25);
+TColor* tYellowD = new TColor(3007, 0.5, 0.5,  0., "tYellow"  , 0.15);
+TColor* tOrange  = new TColor(3008,  1.,  .5,  0., "tOrange"  , 0.15);
+TColor* tBlack   = new TColor(3009,  0.,  0.,  0., "tBlack"   , 0.15);
+TColor* kCombDark= new TColor(3010, .48, .88,  1., "kCombDark");
+TColor* kComb    = new TColor(3011, .28, .58, .70, "kComb");
+TColor* tComb    = new TColor(3012, .28, .58, .70, "tComb"    , 0.25);
  
 // Common plotting style for expected and observed limit contours 
 //  exp         : TGraph for expected limits
