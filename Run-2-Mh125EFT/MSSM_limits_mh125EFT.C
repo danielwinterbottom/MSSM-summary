@@ -56,9 +56,9 @@ void MSSM_limits_mh125EFT(){
   leg0_->AddEntry(g2, "#phi #rightarrow tt", "F");
   TGraph* g3 = Contour(HIG_17_033_exp, HIG_17_033_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
   leg0_->AddEntry(g3, "H #rightarrow WW", "F");
-  TGraph* g4 = Contour(HIG_18_023_exp, HIG_18_023_obs, kRed+2, kRed, tRed->GetNumber(), false); 
+  TGraph* g4 = Contour(HIG_18_023_exp, HIG_18_023_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
   leg0_->AddEntry(g4, "A #rightarrow ZH(#tau#tau)", "F");
-  TGraph* g5 = Contour(B2G_23_002_exp, B2G_23_002_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
+  TGraph* g5 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
   leg0_->AddEntry(g5 , "X#rightarrow HH^{#scale[1.6]{ #club}}", "F");
     
   TGraph* dummy = new TGraph();  

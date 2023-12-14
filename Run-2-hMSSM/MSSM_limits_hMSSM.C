@@ -51,9 +51,9 @@ void MSSM_limits_hMSSM(){
   leg0_->AddEntry(g3, "#phi #rightarrow tt", "F");
   TGraph* g4 = Contour(HIG_17_033_exp, HIG_17_033_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
   leg0_->AddEntry(g4, "H #rightarrow WW", "F");
-  TGraph* g5 = Contour(HIG_18_023_exp, HIG_18_023_obs, kRed+2, kRed, tRed->GetNumber(), false); 
+  TGraph* g5 = Contour(HIG_18_023_exp, HIG_18_023_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
   leg0_->AddEntry(g5, "A #rightarrow ZH (ll#tau#tau)", "F");
-  TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
+  TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
   leg0_->AddEntry(g6 , "X#rightarrow HH^{#scale[1.6]{ #club}}", "F");
 
 /*-----------------------------------------------------------------------------

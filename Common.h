@@ -85,7 +85,7 @@ TCanvas* squared_legend_to_right(float lower_x=130., float upper_x=2100., float 
   hr->GetXaxis()->SetMoreLogLabels();
   hr->GetXaxis()->SetNoExponent();
   // define y-axis
-  hr->SetYTitle("tan#beta");
+  hr->SetYTitle("tan #beta");
   hr->GetYaxis()->SetLabelFont(42);
   hr->GetYaxis()->SetTitleSize(0.04);
   hr->GetYaxis()->SetTitleOffset(0.9);
