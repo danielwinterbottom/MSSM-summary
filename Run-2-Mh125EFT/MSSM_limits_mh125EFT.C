@@ -4,7 +4,6 @@
 #include "HIG-18-023.h"
 #include "HIG-17-033.h"
 #include "HIG-17-027.h"
-#include "HIG-20-016.h"
 #include "HIG-21-001.h"
 #include "Eligibility.h"
 
@@ -59,7 +58,7 @@ void MSSM_limits_mh125EFT(){
   TGraph* g4 = Contour(HIG_18_023_exp, HIG_18_023_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
   leg0_->AddEntry(g4, "#splitline{A #rightarrow ZH (ll#tau#tau)}{JHEP 03 (2020) 65}", "F");
   TGraph* g5 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g5 , "X#rightarrow HH^{#scale[1.6]{ #club}}", "F");
+  leg0_->AddEntry(g5 , "#splitline{X#rightarrow HH}{arXiv:2403.16926}^{#scale[1.6]{ #club}}", "F");
     
   TGraph* dummy = new TGraph();  
   dummy->SetFillColor(kWhite);
