@@ -46,15 +46,15 @@ void MSSM_limits_hMSSM(){
   TGraph* g1 = Contour(HIG_17_031_exp, HIG_17_031_obs, kCombDark->GetNumber(), kComb->GetNumber(), tComb->GetNumber(),false); 
   leg0_->AddEntry(g1, "#splitline{h(125)}{EPJC 79 (2019) 421}", "F");
   TGraph* g2 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
-  leg0_->AddEntry(g2, "#splitline{#phi #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
+  leg0_->AddEntry(g2, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
   TGraph* g3 = Contour(HIG_17_027_exp, HIG_17_027_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
-  leg0_->AddEntry(g3, "#splitline{#phi #rightarrow tt}{JHEP 04 (2020) 171}", "F");
+  leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{JHEP 04 (2020) 171}", "F");
   TGraph* g4 = Contour(HIG_17_033_exp, HIG_17_033_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
   leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{JHEP 03 (2020) 34}", "F");
   TGraph* g5 = Contour(HIG_18_023_exp, HIG_18_023_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
-  leg0_->AddEntry(g5, "#splitline{A #rightarrow ZH (ll#tau#tau)}{JHEP 03 (2020) 65}", "F");
+  leg0_->AddEntry(g5, "#splitline{A #rightarrow Zh (ll#tau#tau)}{JHEP 03 (2020) 65}", "F");
   TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g6, "#splitline{X#rightarrow HH}{arXiv:2403.16926}^{#scale[1.6]{ #club}}", "F");
+  leg0_->AddEntry(g6, "#splitline{H#rightarrow hh}{arXiv:2403.16926}^{#scale[1.6]{ #club}}", "F");
 
 /*-----------------------------------------------------------------------------
 

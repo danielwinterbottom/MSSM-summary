@@ -55,11 +55,11 @@ void MSSM_limits_mh125(){
 //  leg0_->AddEntry(g8 , "#splitline{h(125) (h#rightarrow WW)}{Nature 607 (2022) 60^{#scale[1.6]{ #club}}}", "F");
   /*-------------------------------------------------------------------------*/ 
   TGraph* g1 = Contour(HIG_18_010_exp, HIG_18_010_obs, kYellow+2, kYellow, tYellow->GetNumber(), true); 
-  leg0_->AddEntry(g1, "#splitline{A/H/h #rightarrow #mu#mu}{PLB 798 (2019) 134922}", "F");
+  leg0_->AddEntry(g1, "#splitline{H/A #rightarrow #mu#mu}{PLB 798 (2019) 134922}", "F");
   TGraph* g2 = Contour(HIG_16_018_exp, HIG_16_018_obs, kCyan+2, kCyan, tCyan->GetNumber(), true); 
-  leg0_->AddEntry(g2, "#splitline{A/H #rightarrow bb}{JHEP 08 (2018) 113}", "F");
+  leg0_->AddEntry(g2, "#splitline{H/A #rightarrow bb}{JHEP 08 (2018) 113}", "F");
   TGraph* g3 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
-  leg0_->AddEntry(g3, "#splitline{#phi #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
+  leg0_->AddEntry(g3, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
   TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
   leg0_->AddEntry(g4, "#splitline{H #rightarrow WW(2l2#nu)}{(HIG-20-016)^{#scale[1.6]{ #club}}}", "F");
 //  TGraph* g5 = Contour(HIG_21_011_exp, HIG_21_011_obs, kRed+2, kRed, tRed->GetNumber(), false); 
