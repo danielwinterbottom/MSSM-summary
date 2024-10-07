@@ -54,7 +54,7 @@ void MSSM_limits_hMSSM(){
   TGraph* g5 = Contour(HIG_18_023_exp, HIG_18_023_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
   leg0_->AddEntry(g5, "#splitline{A #rightarrow Zh (ll#tau#tau)}{JHEP 03 (2020) 65}", "F");
   TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g6, "#splitline{H#rightarrow hh}{arXiv:2403.16926}^{#scale[1.6]{ #club}}", "F");
+  leg0_->AddEntry(g6, "#splitline{H#rightarrow hh}{arXiv:2403.16926^{#scale[1.6]{ #club}}}", "F");
 
 /*-----------------------------------------------------------------------------
 
