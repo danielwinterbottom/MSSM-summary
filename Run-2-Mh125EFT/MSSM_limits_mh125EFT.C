@@ -1,10 +1,10 @@
 #include "../Common.h"
 #include "B2G-23-002.h"
 #include "HIG-18-005.h"
-#include "HIG-18-023.h"
-#include "HIG-17-033.h"
 #include "HIG-17-027.h"
 #include "HIG-21-001.h"
+#include "HIG-22-004.h"
+#include "HIG-20-016.h"
 #include "Eligibility.h"
 
 
@@ -50,15 +50,15 @@ void MSSM_limits_mh125EFT(){
 
   /*-------------------------------------------------------------------------*/ 
   TGraph* g1 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
-  leg0_->AddEntry(g1, "#splitline{#phi #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
+  leg0_->AddEntry(g1, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
   TGraph* g2 = Contour(HIG_17_027_exp, HIG_17_027_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
-  leg0_->AddEntry(g2, "#splitline{#phi #rightarrow tt}{JHEP 04 (2020) 171}", "F");
-  TGraph* g3 = Contour(HIG_17_033_exp, HIG_17_033_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
-  leg0_->AddEntry(g3, "#splitline{H #rightarrow WW}{JHEP 03 (2020) 34}", "F");
-  TGraph* g4 = Contour(HIG_18_023_exp, HIG_18_023_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
-  leg0_->AddEntry(g4, "#splitline{A #rightarrow ZH (ll#tau#tau)}{JHEP 03 (2020) 65}", "F");
+  leg0_->AddEntry(g2, "#splitline{H/A #rightarrow t#bar{t}}{JHEP 04 (2020) 171}", "F");
+  TGraph* g3 = Contour(HIG_20_016_exp, HIG_20_016_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
+  leg0_->AddEntry(g3, "#splitline{H #rightarrow WW}{HIG-20-016^{#scale[1.6]{ #club}}}", "F");
+  TGraph* g4 = Contour(HIG_22_004_exp, HIG_22_004_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
+  leg0_->AddEntry(g4, "#splitline{A #rightarrow Zh (ll#tau#tau)}{HIG-22-004^{#scale[1.6]{ #club}}}", "F");
   TGraph* g5 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g5 , "#splitline{X#rightarrow HH}{arXiv:2403.16926}^{#scale[1.6]{ #club}}", "F");
+  leg0_->AddEntry(g5 , "#splitline{H#rightarrow hh}{arXiv:2403.16926^{#scale[1.6]{ #club}}}", "F");
     
   TGraph* dummy = new TGraph();  
   dummy->SetFillColor(kWhite);
