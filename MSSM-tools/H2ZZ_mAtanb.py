@@ -1,8 +1,9 @@
 import ROOT
 import csv
 import numpy as np
+from contour_tools import *
 
-def read_csv_to_graphs(file_path):
+def read_csv_to_graphs_old(file_path):
     masses = []
     widths = []
     observed = []
@@ -31,12 +32,11 @@ def read_csv_to_graphs(file_path):
     return graph_obs, graph_exp
 
 
-
 if __name__ == "__main__":
 
     benchmark = "mh125EFT"
 
-    proc = 'vbf'
+    proc = 'gg'
 
     if proc == 'gg': limits_file = "MSSM-tools/csv_files/HtoZZto4LRun2/ggF_2D_Run2.csv"
     else: limits_file = "MSSM-tools/csv_files/HtoZZto4LRun2/VBF_2D_Run2.csv"
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     h_H_mass = f.Get('m_H')
     h_H_width = f.Get('width_H')
-    h_xs_ggH = f.Get(f'xs_{proc}_H')
+    h_xs = f.Get(f'xs_{proc}_H')
     h_BR_HZZ = f.Get('br_H_ZZ')
 
     g_obs, g_exp = read_csv_to_graphs(limits_file)
@@ -71,7 +71,7 @@ if __name__ == "__main__":
             mH = h_H_mass.Interpolate(mA, tanb)
             width = h_H_width.Interpolate(mA, tanb)
 
-            xs = h_xs_ggH.Interpolate(mA, tanb)
+            xs = h_xs.Interpolate(mA, tanb)
             br = h_BR_HZZ.Interpolate(mA, tanb)
 
             obs = g_obs.Interpolate(mH, width)

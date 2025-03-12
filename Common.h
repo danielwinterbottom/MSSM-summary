@@ -38,11 +38,13 @@ TGraph* Contour(TGraph* exp(), TGraph* obs(bool), int dcolor, int lcolor, int tc
   if(exp){
     g0 = exp();
     g0->SetLineColor(dcolor);
-    g0->SetLineWidth((upper_limit?+1:-1)*303);
-    g0->SetFillStyle(3004);
+    //g0->SetLineWidth((upper_limit?+1:-1)*303);
+    //g0->SetFillStyle(3004);
+    g0->SetLineWidth(2);
+    g0->SetFillStyle(0);
     g0->SetFillColor(dcolor);
     g0->SetLineStyle(1);
-    g0->Draw("Lsame");
+    g0->Draw("Csame");
   }
   if(obs){
     g1 = obs(true );
