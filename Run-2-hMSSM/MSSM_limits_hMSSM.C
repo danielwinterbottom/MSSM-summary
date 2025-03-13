@@ -5,13 +5,12 @@
 #include "HIG-21-001.h"
 #include "HIG-21-005.h"
 #include "HIG-21-011.h"
-#include "HIG-20-016.h"
 #include "HIG-17-027.h"
 #include "HIG-17-031.h"
-#include "HIG-17-033.h"
 #include "HIG-18-010.h"
 #include "HIG-18-005.h"
 #include "HIG-18-023.h"
+#include "HIG-20-016.h"
 
 void MSSM_limits_hMSSM(){
 /*-----------------------------------------------------------------------------
@@ -22,7 +21,7 @@ void MSSM_limits_hMSSM(){
   // switch off stats box
   gStyle->SetOptStat(0);
   // define canvas  
-  TCanvas* canv = squared_legend_to_right(130., 800., 1., 10., 1, 1, true);
+  TCanvas* canv = squared_legend_to_right(130., 2000., 1., 60., 1, 1, true);
   // define legend
   TLegend* leg0_ = new TLegend(0.67, 0.10, 0.97, 0.94);
   leg0_->SetBorderSize(1);
@@ -36,7 +35,7 @@ void MSSM_limits_hMSSM(){
   exp->SetLineWidth(303); 
   exp->SetFillStyle(3004);     
   leg0_->AddEntry(obs, "#splitline{Observed}{exclusion 95% CL}", "F");  
-  leg0_->AddEntry(exp, "#splitline{Expected}{exclusion 95% CL}", "LF");
+  leg0_->AddEntry(exp, "#splitline{Expected}{exclusion 95% CL}", "L");
   
 /*-----------------------------------------------------------------------------
 
@@ -49,8 +48,8 @@ void MSSM_limits_hMSSM(){
   leg0_->AddEntry(g2, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
   TGraph* g3 = Contour(HIG_17_027_exp, HIG_17_027_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
   leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{JHEP 04 (2020) 171}", "F");
-  TGraph* g4 = Contour(HIG_17_033_exp, HIG_17_033_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
-  leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{JHEP 03 (2020) 34}", "F");
+  TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false);
+  leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{HIG-20-016^{#scale[1.6]{ #club}}}", "F");
   TGraph* g5 = Contour(HIG_18_023_exp, HIG_18_023_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
   leg0_->AddEntry(g5, "#splitline{A #rightarrow Zh (ll#tau#tau)}{JHEP 03 (2020) 65}", "F");
   TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 

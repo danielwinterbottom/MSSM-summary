@@ -269,6 +269,26 @@ def read_csv_to_graphs(file_path, mass_column=0, obs_column=2, exp_colum=3, widt
 
     return graph_obs, graph_exp
 
+def CombineContours(contours):
+    """
+    Combine contours into 1 TGraph so they can be drawn  as a filled area
+    """
+
+    filled_region = ROOT.TGraph()
+
+    for i in range(contours[0].GetN()):
+        filled_region.SetPoint(i, contours[0].GetX()[i], contours[0].GetY()[i])
+    for N, c in enumerate(contours[1:]):
+        for i in range(c.GetN()):
+            filled_region.SetPoint(filled_region.GetN(),
+                                   c.GetX()[c.GetN() - 1 - i],
+                                   c.GetY()[c.GetN() - 1 - i])
+        filled_region.SetPoint(filled_region.GetN(),
+                     contours[0].GetX()[contours[0].GetN() - 1],
+                     contours[0].GetY()[contours[0].GetN() - 1])
+    
+    return filled_region
+
 if __name__ == "__main__":
 
     root_file = 'mh125EFT_HWW_graphs_gg.root'

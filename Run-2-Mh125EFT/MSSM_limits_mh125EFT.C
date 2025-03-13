@@ -5,6 +5,7 @@
 #include "HIG-21-001.h"
 #include "HIG-22-004.h"
 #include "HIG-20-016.h"
+#include "HIG-24-002.h"
 #include "Eligibility.h"
 
 
@@ -17,7 +18,7 @@ void MSSM_limits_mh125EFT(){
   // switch off stats box
   gStyle->SetOptStat(0);
   // define canvas  
-  TCanvas* canv = squared_legend_to_right(90., 800., 1., 10., 1, 1, true);
+  TCanvas* canv = squared_legend_to_right(90., 1200., 1., 10., 1, 1, true);
     // define legend
   TLegend* leg0_ = new TLegend(0.67, 0.10, 0.97, 0.94);
   leg0_->SetBorderSize(1);
@@ -31,26 +32,21 @@ void MSSM_limits_mh125EFT(){
   exp->SetLineWidth(303); 
   exp->SetFillStyle(3004);     
   leg0_->AddEntry(obs, "#splitline{Observed}{exclusion 95% CL}", "F");  
-  leg0_->AddEntry(exp, "#splitline{Expected}{exclusion 95% CL}", "LF");
+  leg0_->AddEntry(exp, "#splitline{Expected}{exclusion 95% CL}", "L");
   
 /*-----------------------------------------------------------------------------
 
  Plotting (contours will be drawn on top of each other according to this order)
 
 -----------------------------------------------------------------------------*/  
-  // eligibility line for the given benchmark
-  TGraph* e1 = Eligibility();
-  e1->SetLineColor(kGray+1);
-  e1->SetLineWidth(1);
-  e1->SetLineStyle(1);
-  e1->SetLineWidth(2);
-  e1->SetFillColor(kGray+1);  
-  e1->SetFillStyle(3002);//3005
-  e1->Draw("FLsame");
 
   /*-------------------------------------------------------------------------*/ 
   TGraph* g1 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
   leg0_->AddEntry(g1, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
+  //TGraph* g6 = Contour(HIG_24_002_exp, HIG_24_002_obs, kYellow+2, kYellow, tYellow->GetNumber(), false); 
+  TGraph* g6 = Contour(HIG_24_002_exp, HIG_24_002_obs, kCyan+2, kCyan, tCyan->GetNumber(), false);
+  leg0_->AddEntry(g6, "#splitline{H #rightarrow ZZ}{HIG-24-002^{#scale[1.6]{ #club}}}", "F");
+
   TGraph* g2 = Contour(HIG_17_027_exp, HIG_17_027_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
   leg0_->AddEntry(g2, "#splitline{H/A #rightarrow t#bar{t}}{JHEP 04 (2020) 171}", "F");
   TGraph* g3 = Contour(HIG_20_016_exp, HIG_20_016_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
@@ -59,7 +55,18 @@ void MSSM_limits_mh125EFT(){
   leg0_->AddEntry(g4, "#splitline{A #rightarrow Zh (ll#tau#tau)}{HIG-22-004^{#scale[1.6]{ #club}}}", "F");
   TGraph* g5 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
   leg0_->AddEntry(g5 , "#splitline{H#rightarrow hh}{arXiv:2403.16926^{#scale[1.6]{ #club}}}", "F");
-    
+
+  // eligibility line for the given benchmark
+  TGraph* e1 = Eligibility();
+  e1->SetLineColor(kGray+1);
+  e1->SetLineWidth(1);
+  e1->SetLineStyle(1);
+  e1->SetLineWidth(2);
+  e1->SetFillColor(kGray);
+  e1->SetLineColor(kGray+1);
+  e1->SetFillStyle(1001);
+  e1->Draw("FLsame");
+
   TGraph* dummy = new TGraph();  
   dummy->SetFillColor(kWhite);
   dummy->SetLineColor(kWhite);
@@ -77,7 +84,7 @@ void MSSM_limits_mh125EFT(){
   leg1_->SetFillStyle (1001);
   leg1_->SetTextSize(0.022464);
   leg1_->SetFillColor (kWhite);
-  leg1_->AddEntry(e1, "m_{h}^{MSSM}\\neq 125 \\pm 3 GeV", "LF");  
+  leg1_->AddEntry(e1, "m_{h}^{MSSM}\\neq 125 \\pm 3 GeV", "F");  
 
   TPaveText* extra = new TPaveText(0.585, 0.85, 0.685, 0.95, "NDC");
   extra->SetBorderSize(   0 );
