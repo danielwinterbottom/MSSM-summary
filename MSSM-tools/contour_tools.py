@@ -199,8 +199,8 @@ def read_json_to_graphs_NWA(json_file, obs_name='obs', exp_name='exp0', units='p
         for mass in data:
             masses.append(float(mass))
             widths.append(0.)
-            observed.append(data[mass]['obs']*unit_scale)       
-            expected.append(data[mass]['exp0']*unit_scale)
+            observed.append(data[mass][obs_name]*unit_scale)       
+            expected.append(data[mass][exp_name]*unit_scale)
             # duplicate points for 100% width so interpolation will always return same values independent of the widths
             masses.append(masses[-1])
             widths.append(masses[-1]) # i.e a 100% width

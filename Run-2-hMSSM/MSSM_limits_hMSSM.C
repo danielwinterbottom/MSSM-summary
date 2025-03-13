@@ -11,6 +11,7 @@
 #include "HIG-18-005.h"
 #include "HIG-18-023.h"
 #include "HIG-20-016.h"
+#include "HIG-24-002.h"
 
 void MSSM_limits_hMSSM(){
 /*-----------------------------------------------------------------------------
@@ -44,6 +45,10 @@ void MSSM_limits_hMSSM(){
 -----------------------------------------------------------------------------*/
   TGraph* g1 = Contour(HIG_17_031_exp, HIG_17_031_obs, kCombDark->GetNumber(), kComb->GetNumber(), tComb->GetNumber(),false); 
   leg0_->AddEntry(g1, "#splitline{h(125)}{EPJC 79 (2019) 421}", "F");
+
+  TGraph* g7 = Contour(HIG_24_002_exp, HIG_24_002_obs, kCyan+2, kCyan, tCyan->GetNumber(), false);
+  leg0_->AddEntry(g7, "#splitline{H #rightarrow ZZ}{HIG-24-002^{#scale[1.6]{ #club}}}", "F");
+
   TGraph* g2 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
   leg0_->AddEntry(g2, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
   TGraph* g3 = Contour(HIG_17_027_exp, HIG_17_027_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 

@@ -1,5 +1,5 @@
 # This script converts limits on cross-sections to limits on the mAtanb plane for a given benchmark scenario
-# Currently WW, ZZ and HH decay modes are supported
+# Currently WW, ZZ and hh decay modes are supported
 
 #Latest commands used for results in summary plot (13/03/25)
 #H->WW: for bm in mh125EFT mh125 hMSSM; do python3 MSSM-tools/Get_mAtanb_regions.py --decay WW --benchmark ${bm}; done
@@ -14,7 +14,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--proc', type=str, default='gg', help='Production mode (gg, vbf, bb, gg+bb, gg+vbf, all)')
-parser.add_argument('--decay', type=str, help='Decay mode (WW, ZZ, HH)')
+parser.add_argument('--decay', type=str, help='Decay mode (WW, ZZ, hh)')
 parser.add_argument('--higgs', type=str, default='H', help='Higgs boson to consider: H or A')
 parser.add_argument('--benchmark', type=str, default='mh125EFT', help='Benchmark scenario')
 
@@ -23,8 +23,8 @@ args = parser.parse_args()
 if args.proc not in ['gg','vbf','bb','gg+bb','gg+vbf','all']: 
     print(f"Invalid production mode {args.proc}. Supported modes are gg, vbf, bb, gg+bb, gg+vbf, all")
     exit(1)
-if args.decay not in ['WW','ZZ','HH']:
-    print(f"Invalid decay mode {args.decay}. Supported modes are WW, ZZ, HH")
+if args.decay not in ['WW','ZZ','hh']:
+    print(f"Invalid decay mode {args.decay}. Supported modes are WW, ZZ, hh")
     exit(1)
 if args.higgs not in ['H','A']:
     print(f"Invalid Higgs boson {args.higgs}. Supported bosons are H, A")
@@ -49,8 +49,7 @@ if args.decay == 'WW':
         limits_file = 'MSSM-tools/json_files/HtoWWto2L2NuRun2/indep_float.json'
     
     br_extra = (1.086e-1*3)**2 #The WW->2L2Nu branching ratio
-
-    print(f"Using limits from {limits_file}")    
+   
     g_obs, g_exp = read_json_to_graphs_NWA(limits_file)
 
 if args.decay == 'ZZ':
@@ -62,8 +61,14 @@ if args.decay == 'ZZ':
     else: 
         limits_file = "MSSM-tools/csv_files/HtoZZto4LRun2/ggF_2D_Run2.csv"
 
-    print(f"Using limits from {limits_file}") 
     g_obs, g_exp = read_csv_to_graphs(limits_file)
+
+if args.decay == 'hh':
+    limits_file = "MSSM-tools/json_files/GGF_Radion_HH_B2G-23-002.json"
+
+    g_obs, g_exp = read_json_to_graphs_NWA(limits_file, obs_name='observed', exp_name='limit', units='fb')
+
+print(f"Using limits from {limits_file}") 
 
 # get MSSM benchmark file
 mssm_bm_file = f"MSSM-tools/root_files/{args.benchmark}_13.root"
@@ -71,13 +76,13 @@ f = ROOT.TFile(mssm_bm_file)
 
 # get histogram of cross-sections vs mA and tanb
 if args.proc in ['gg','vbf','bb']: h_xs = f.Get(f'xs_{args.proc}_{args.higgs}')
-elif arg.proc == 'gg+bb':
+elif args.proc == 'gg+bb':
     h_xs = f.Get(f'xs_gg_{args.higgs}')
     h_xs.Add(f.Get(f'xs_bb_{args.higgs}'))
-elif arg.proc == 'gg+vbf':
+elif args.proc == 'gg+vbf':
     h_xs = f.Get(f'xs_gg_{args.higgs}')
     h_xs.Add(f.Get(f'xs_vbf_{args.higgs}'))
-elif arg.proc == 'all':
+elif args.proc == 'all':
     h_xs = f.Get(f'xs_gg_{args.higgs}')
     h_xs.Add(f.Get(f'xs_bb_{args.higgs}'))
     h_xs.Add(f.Get(f'xs_vbf_{args.higgs}'))
