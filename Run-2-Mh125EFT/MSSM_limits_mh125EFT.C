@@ -18,7 +18,7 @@ void MSSM_limits_mh125EFT(){
   // switch off stats box
   gStyle->SetOptStat(0);
   // define canvas  
-  TCanvas* canv = squared_legend_to_right(90., 1200., 1., 10., 1, 1, true);
+  TCanvas* canv = squared_legend_to_right(90., 1400., 1., 10., 1, 1, true);
     // define legend
   TLegend* leg0_ = new TLegend(0.67, 0.10, 0.97, 0.94);
   leg0_->SetBorderSize(1);
@@ -43,18 +43,17 @@ void MSSM_limits_mh125EFT(){
   /*-------------------------------------------------------------------------*/ 
   TGraph* g1 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
   leg0_->AddEntry(g1, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
-  //TGraph* g6 = Contour(HIG_24_002_exp, HIG_24_002_obs, kYellow+2, kYellow, tYellow->GetNumber(), false); 
-  TGraph* g6 = Contour(HIG_24_002_exp, HIG_24_002_obs, kCyan+2, kCyan, tCyan->GetNumber(), false);
-  leg0_->AddEntry(g6, "#splitline{H #rightarrow ZZ}{HIG-24-002^{#scale[1.6]{ #club}}}", "F");
+  TGraph* g2 = Contour(HIG_24_002_exp, HIG_24_002_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false);
+  leg0_->AddEntry(g2, "#splitline{H #rightarrow ZZ}{HIG-24-002^{#scale[1.6]{ #club}}}", "F");
 
-  TGraph* g2 = Contour(HIG_17_027_exp, HIG_17_027_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
-  leg0_->AddEntry(g2, "#splitline{H/A #rightarrow t#bar{t}}{JHEP 04 (2020) 171}", "F");
-  TGraph* g3 = Contour(HIG_20_016_exp, HIG_20_016_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
-  leg0_->AddEntry(g3, "#splitline{H #rightarrow WW}{HIG-20-016^{#scale[1.6]{ #club}}}", "F");
-  TGraph* g4 = Contour(HIG_22_004_exp, HIG_22_004_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
-  leg0_->AddEntry(g4, "#splitline{A #rightarrow Zh (ll#tau#tau)}{HIG-22-004^{#scale[1.6]{ #club}}}", "F");
-  TGraph* g5 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g5 , "#splitline{H#rightarrow hh}{arXiv:2403.16926^{#scale[1.6]{ #club}}}", "F");
+  TGraph* g3 = Contour(HIG_17_027_exp, HIG_17_027_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
+  leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{JHEP 04 (2020) 171}", "F");
+  TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kCyan+2, kCyan, tCyan->GetNumber(), false); 
+  leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{HIG-20-016^{#scale[1.6]{ #club}}}", "F");
+  TGraph* g5 = Contour(HIG_22_004_exp, HIG_22_004_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
+  leg0_->AddEntry(g5, "#splitline{A #rightarrow Zh (ll#tau#tau)}{HIG-22-004^{#scale[1.6]{ #club}}}", "F");
+  TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
+  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{arXiv:2403.16926^{#scale[1.6]{ #club}}}", "F");
 
   // eligibility line for the given benchmark
   TGraph* e1 = Eligibility();

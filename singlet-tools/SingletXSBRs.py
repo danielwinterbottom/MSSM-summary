@@ -2,12 +2,13 @@ import csv
 import ROOT
 import numpy as np
 import math
+import os
 
 class SingletXSBRs():
 
     def __init__(self):
-        self.xs_csv = 'csv_files/YR4_BSM_13TeV.csv'
-        self.widths_csv = 'csv_files/YR4_BSM_Width.csv'
+        self.xs_csv = os.path.join(os.path.dirname(os.path.abspath(__file__)), "csv_files", "YR4_BSM_13TeV.csv")
+        self.widths_csv = os.path.join(os.path.dirname(os.path.abspath(__file__)), "csv_files", "YR4_BSM_Width.csv")
 
         self.mh = 125.  
 
@@ -118,7 +119,6 @@ class SingletXSBRs():
     def ComputeXSBR(self, mH, tanb, sina, proc, decay):
         xs = self.ComputeXS(mH, sina, proc)
         br = self.ComputeBR(mH, tanb, sina, decay)
-        print(xs, br)
         return xs*br
 
 if __name__ == "__main__":
