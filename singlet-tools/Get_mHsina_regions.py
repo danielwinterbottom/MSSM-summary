@@ -1,38 +1,30 @@
-# This script converts limits on cross-sections to limits on the mAtanb plane for a given benchmark scenario
-# Currently WW, ZZ and hh decay modes are supported
-
-#Latest commands used for results in summary plot (13/03/25)
-#H->WW: for bm in mh125EFT mh125 hMSSM; do python3 MSSM-tools/Get_mAtanb_regions.py --decay WW --benchmark ${bm}; done
-#H->ZZ: for bm in mh125EFT mh125 hMSSM; do python3 MSSM-tools/Get_mAtanb_regions.py --decay ZZ --benchmark ${bm}; done
-
-
 import ROOT
 import json
 import numpy as np
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/../MSSM-tools")
 from contour_tools import *
 import argparse
+from SingletXSBRs import SingletXSBRs
+
+# note CMS h125 inclusive signal strength measurment = 1.01 ± 0.05
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--proc', type=str, default='gg', help='Production mode (gg, vbf, bb, gg+bb, gg+vbf, all)')
 parser.add_argument('--decay', type=str, help='Decay mode (WW, ZZ, hh)')
-parser.add_argument('--higgs', type=str, default='H', help='Higgs boson to consider: H or A')
-parser.add_argument('--benchmark', type=str, default='mh125EFT', help='Benchmark scenario')
+parser.add_argument('--tanb', type=float, default=1.0, help='The value of tan(beta)')
 
 args = parser.parse_args()
 
-if args.proc not in ['gg','vbf','bb','gg+bb','gg+vbf','all']: 
+if args.proc not in ['gg','vbf','gg+vbf']: 
     print(f"Invalid production mode {args.proc}. Supported modes are gg, vbf, bb, gg+bb, gg+vbf, all")
     exit(1)
 if args.decay not in ['WW','ZZ','hh']:
     print(f"Invalid decay mode {args.decay}. Supported modes are WW, ZZ, hh")
     exit(1)
-if args.higgs not in ['H','A']:
-    print(f"Invalid Higgs boson {args.higgs}. Supported bosons are H, A")
-    exit(1)
 
-print (f"Processing {args.benchmark} with {args.proc} {args.higgs} production and {args.higgs}->{args.decay} decay")
-
-#for now we hardcode the locations of the json/csv files and whether the width dependent limits are taken, but these could be added as options in the future
+print (f"Processing limits for tanb={args.tanb} with {args.proc} H production and H->{args.decay} decay")    
 
 br_extra = 1. # If the limits include an additional branching ratio e.g WW->2L2Nu then we will need to scale the model xs*br by this number later on
 
@@ -45,8 +37,8 @@ if args.decay == 'WW':
         # this assumed 100% VBF i.e no ggH
         limits_file = 'MSSM-tools/json_files/HtoWWto2L2NuRun2/indep_VBF.json'
     else: 
-        # any other option for proc takes the most general limits but note this may not be accurate in all cases e.g if bb production is large 
-        limits_file = 'MSSM-tools/json_files/HtoWWto2L2NuRun2/indep_float.json'
+        # for other production modes we take the SM-like ggH and VBF fractions  
+        limits_file = 'MSSM-tools/json_files/HtoWWto2L2NuRun2/indep_SM.json'
     
     br_extra = (1.086e-1*3)**2 #The WW->2L2Nu branching ratio
    
@@ -62,38 +54,13 @@ if args.decay == 'ZZ':
         limits_file = "MSSM-tools/csv_files/HtoZZto4LRun2/ggF_2D_Run2.csv"
 
     g_obs, g_exp = read_csv_to_graphs(limits_file,mass_column=0,width_column=1, obs_column=2, exp_column=5)
-
+#obs_column=2, exp_column=3
 if args.decay == 'hh':
     limits_file = "MSSM-tools/json_files/GGF_Radion_HH_B2G-23-002.json"
 
     g_obs, g_exp = read_json_to_graphs_NWA(limits_file, obs_name='observed', exp_name='limit', units='fb')
 
 print(f"Using limits from {limits_file}") 
-
-# get MSSM benchmark file
-mssm_bm_file = f"MSSM-tools/root_files/{args.benchmark}_13.root"
-f = ROOT.TFile(mssm_bm_file)
-
-# get histogram of cross-sections vs mA and tanb
-if args.proc in ['gg','vbf','bb']: h_xs = f.Get(f'xs_{args.proc}_{args.higgs}')
-elif args.proc == 'gg+bb':
-    h_xs = f.Get(f'xs_gg_{args.higgs}')
-    h_xs.Add(f.Get(f'xs_bb_{args.higgs}'))
-elif args.proc == 'gg+vbf':
-    h_xs = f.Get(f'xs_gg_{args.higgs}')
-    h_xs.Add(f.Get(f'xs_vbf_{args.higgs}'))
-elif args.proc == 'all':
-    h_xs = f.Get(f'xs_gg_{args.higgs}')
-    h_xs.Add(f.Get(f'xs_bb_{args.higgs}'))
-    h_xs.Add(f.Get(f'xs_vbf_{args.higgs}'))
-
-# get histogram of branching ratios vs mA and tanb
-h_br = f.Get(f'br_{args.higgs}_{args.decay}')
-
-# get histograms of Higgs mass and width vs mA and tanb
-h_mass = f.Get(f'm_{args.higgs}')
-h_width = f.Get(f'width_{args.higgs}')
-h_hmass = f.Get('m_h')
 
 # find the smallest mass in the limits
 min_mass = 10000
@@ -103,38 +70,43 @@ for p in range(g_exp.GetN()):
         min_mass = mass
 print(f"Minimum mass in the limits is {min_mass}")
 
+# currently hardcode sina-mH range but this could be made an option in the future
+mH_range = (125,1000)
+sina_range = (-0.5,0.5)
 
-# currently hardcode mA range but this could be made an option in the future
-mA_range = (85,1000)
+h_excluded_exp = ROOT.TH2D('h_exp','',1000,mH_range[0],mH_range[1],1000,sina_range[0],sina_range[1])
+h_excluded_obs = ROOT.TH2D('h_obs','',1000,mH_range[0],mH_range[1],1000,sina_range[0],sina_range[1])
 
-h_excluded_exp = ROOT.TH2D('h_exp','',1000,mA_range[0],mA_range[1],1000,h_mass.GetYaxis().GetBinLowEdge(1),h_mass.GetYaxis().GetBinUpEdge(h_mass.GetNbinsY()))
-h_excluded_obs = ROOT.TH2D('h_obs','',1000,mA_range[0],mA_range[1],1000,h_mass.GetYaxis().GetBinLowEdge(1),h_mass.GetYaxis().GetBinUpEdge(h_mass.GetNbinsY()))
+xsbr_tool = SingletXSBRs() # tool for evaluating the XS, BRs, and widths
 
 for y in range(1,h_excluded_exp.GetNbinsY()+1):
     for x in range(1,h_excluded_exp.GetNbinsX()+1):
 
-        tanb = h_excluded_exp.GetYaxis().GetBinCenter(y)
-        mA   = h_excluded_exp.GetXaxis().GetBinCenter(x)
+        sina = h_excluded_exp.GetYaxis().GetBinCenter(y)
+        mH   = h_excluded_exp.GetXaxis().GetBinCenter(x)
 
-        if args.higgs == 'H':
-            mX = h_mass.Interpolate(mA, tanb)
+        width = xsbr_tool.ComputeWidth(mH, args.tanb, sina)
+
+        obs = g_obs.Interpolate(mH, width)
+        exp = g_exp.Interpolate(mH, width)
+
+        if args.proc in ['gg','vbf']: 
+            xsbr = xsbr_tool.ComputeXSBR(mH, args.tanb, sina, args.proc, args.decay)
         else:
-            mX = mA
-
-        width = h_width.Interpolate(mA, tanb)
-        xs = h_xs.Interpolate(mA, tanb)
-        br = h_br.Interpolate(mA, tanb)*br_extra # multiple by the extra branching fraction
-        obs = g_obs.Interpolate(mX, width)
-        exp = g_exp.Interpolate(mX, width)
+            xsbr = xsbr_tool.ComputeXSBR(mH, args.tanb, sina, 'gg', args.decay)
+            xsbr += xsbr_tool.ComputeXSBR(mH, args.tanb, sina, 'vbf', args.decay)
+        xsbr*=br_extra
 
         # now we store a histogram of the limit divide by the XS*BR so all values < 1 are excluded
-        r_exp = 100000. if mX<min_mass or (xs*br) <=0 else exp/(xs*br) # set large values if mass value is out of the explored range or if the predicted XS*BR is zero (i.e so it is not excluded)
-        r_obs = 100000. if mX<min_mass or (xs*br) <=0 else obs/(xs*br)
+        r_exp = 100000. if mH<min_mass or xsbr <=0 else exp/xsbr # set large values if mass value is out of the explored range or if the predicted XS*BR is zero (i.e so it is not excluded)
+        r_obs = 100000. if mH<min_mass or xsbr <=0 else obs/xsbr
 
         h_excluded_exp.SetBinContent(x,y, r_exp)
         h_excluded_obs.SetBinContent(x,y, r_obs)
 
-fout = ROOT.TFile(f'{args.benchmark}_{args.proc}To{args.higgs}To{args.decay}_mAtanb_contours.root', 'recreate')
+benchmark_name = f'singlet_tanb{args.tanb}'.replace('.','p')
+
+fout = ROOT.TFile(f'{benchmark_name}_{args.proc}ToHTo{args.decay}_mHsina_contours.root', 'recreate')
 
 h_excluded_obs.Write()
 h_excluded_exp.Write()

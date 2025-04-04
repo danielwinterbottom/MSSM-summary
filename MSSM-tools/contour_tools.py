@@ -214,7 +214,7 @@ def read_json_to_graphs_NWA(json_file, obs_name='obs', exp_name='exp0', units='p
 
     return graph_obs, graph_exp
 
-def read_csv_to_graphs(file_path, mass_column=0, obs_column=2, exp_colum=3, width_column=1, skip_lines=1, units='pb'): # TODO: change defaults to B2G format (currently using format from H->ZZ search)
+def read_csv_to_graphs(file_path, mass_column=0, obs_column=1, exp_column=2, width_column=None, skip_lines=1, units='pb'): 
     
     """
     Read a csv file to get the observed and expected limits as a function of mass and (optionally) width.
@@ -248,7 +248,7 @@ def read_csv_to_graphs(file_path, mass_column=0, obs_column=2, exp_colum=3, widt
             else:
                 width = float(row[width_column])
             obs = float(row[obs_column])*unit_scale
-            exp = float(row[exp_colum])*unit_scale
+            exp = float(row[exp_column])*unit_scale
             
             masses.append(mass)
             widths.append(width)
