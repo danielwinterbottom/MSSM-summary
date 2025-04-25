@@ -53,7 +53,7 @@ void MSSM_limits_mh125EFT(){
   TGraph* g5 = Contour(HIG_22_004_exp, HIG_22_004_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
   leg0_->AddEntry(g5, "#splitline{A #rightarrow Zh (ll#tau#tau)}{HIG-22-004^{#scale[1.6]{ #club}}}", "F");
   TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{arXiv:2403.16926^{#scale[1.6]{ #club}}}", "F");
+  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{Phys. Rep. 1115 (2024) 368^{#scale[1.6]{ #club}}}", "F");
 
   // eligibility line for the given benchmark
   TGraph* e1 = Eligibility();
