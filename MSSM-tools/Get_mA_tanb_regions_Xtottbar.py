@@ -186,8 +186,8 @@ def train_keras_nn(df, epochs=50, batch_size=32):
     plt.savefig(f"{name}_training_results.pdf")
     # also make a histogram plot of true-predicted values
     plt.figure(figsize=(8, 6))
-    plt.hist((y_train_true - y_train_pred)/y_train_true, bins=50, alpha=0.5, label='Train', density=True)
-    plt.hist((y_val_true - y_val_pred)/y_val_true, bins=50, alpha=0.5, label='Validation', density=True)
+    plt.hist(y_train_true - y_train_pred, bins=50, alpha=0.5, label='Train', density=True)
+    plt.hist(y_val_true - y_val_pred, bins=50, alpha=0.5, label='Validation', density=True)
     plt.xlabel("(True - Predicted) -2dNLL")
     plt.legend()
     plt.savefig(f"{name}_training_results_histogram.pdf")
@@ -294,6 +294,14 @@ else:
     print("Loading YAML files and building interpolator...")
     df = load_yaml_files_to_dataframe("yaml_files/XTottbarRun2/")
     df_clean = df.dropna()
+    # print df when -2dNLL values are negative
+    if len(df_clean[df_clean["-2dNLL"] < 0]) > 0:
+        print("Warning: Negative -2dNLL values found:")
+        # sort the -ve values with largest absolute value first
+        df_negative = df_clean[df_clean["-2dNLL"] < 0].sort_values(by="-2dNLL", ascending=True)
+        print(df_negative)
+        # save the negative values to a separate file
+        df_negative.to_csv("negative_2dNLL_values.csv", index=False)
     df_clean.to_pickle(f"{name}_data.pkl")
     print(f"Loaded {len(df)} entries from YAML files.")
     print(f"Building interpolator...")
