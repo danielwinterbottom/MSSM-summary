@@ -8,10 +8,19 @@ import argparse
 import pickle
 from contour_tools import *
 from random import random
+import matplotlib.pyplot as plt
+
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--benchmark', type=str, default='mh125EFT', help='Benchmark scenario')
 parser.add_argument('--overwrite', action='store_true', help='Overwrite existing interpolator data')
+parser.add_argument('--interp_method', type=str, default='nearest', choices=['nearest','linear','NN'], help='Interpolation method to use')
 args = parser.parse_args()
 
 def parse_filename(filename):
@@ -42,33 +51,6 @@ def extract_variable(variables, name):
                 return unique[0]
             return values[0]  # fallback: return first if multiple values
     return None
-
-def load_yaml_files_to_dataframe_old(directory):
-    data = []
-
-    for file in os.listdir(directory):
-        if file.endswith(".yaml"):
-            mass, width = parse_filename(file)
-            if mass is None:
-                continue
-
-            with open(os.path.join(directory, file), "r") as f:
-                print(f"Loading file: {file} (mass={mass}, width={width})")
-                content = yaml.safe_load(f)
-
-            indep_vars = content.get("independent_variables", [])
-            dep_vars = content.get("dependent_variables", [])
-
-            row = {
-                "mass": mass,
-                "rel_width": width/100,
-                "g_A": extract_variable(indep_vars, "$g_{A t \\bar t}$"),
-                "g_H": extract_variable(indep_vars, "$g_{H t \\bar t}$"),
-                "-2dNLL": extract_variable(dep_vars, "-2dNLL"),
-            }
-            data.append(row)
-
-    return pd.DataFrame(data)
 
 def load_yaml_files_to_dataframe(directory):
     data = []
@@ -115,19 +97,111 @@ def load_yaml_files_to_dataframe(directory):
     return pd.DataFrame(data)
 
 def build_interpolator(df):
-    df_clean = df.dropna()
     #interpolator = NearestNDInterpolator(
-    interpolator = LinearNDInterpolator(
-        df_clean[["mass", "rel_width", "g_A", "g_H"]],
-        df_clean["-2dNLL"]
-    )
+    if args.interp_method == 'nearest':
+        name = 'interpolator_nearest'
+        interpolator = NearestNDInterpolator(
+            df[["mass", "rel_width", "g_A", "g_H"]],
+            df["-2dNLL"]
+        )
+    elif args.interp_method == 'linear':
+        name = 'interpolator_linear'
+        interpolator = LinearNDInterpolator(
+            df[["mass", "rel_width", "g_A", "g_H"]],
+            df["-2dNLL"]
+        )
 
     # store these as pkl files for later use
-    df_clean.to_pickle("interpolator_data.pkl")
-    interpolator_file = "interpolator.pkl"
+    interpolator_file = f"{name}.pkl"
     with open(interpolator_file, "wb") as f:
         pickle.dump(interpolator, f)
-    return interpolator, df_clean
+    return interpolator
+
+def train_keras_nn(df, epochs=50, batch_size=32):
+    X = df[["mass", "rel_width", "g_A", "g_H"]].values
+    y = df["-2dNLL"].values.reshape(-1, 1)
+
+    # Scale features and target
+    scaler_x = MinMaxScaler()
+    scaler_y = MinMaxScaler()
+    X_scaled = scaler_x.fit_transform(X)
+    y_scaled = scaler_y.fit_transform(y)
+
+    # Split into training and validation sets
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_scaled, y_scaled, test_size=0.1, random_state=42
+    )
+
+    # Define model
+    model = keras.Sequential([
+        layers.Input(shape=(4,)),
+        layers.Dense(64, activation="relu"),
+        layers.Dense(64, activation="relu"),
+        layers.Dense(1)
+    ])
+
+    model.compile(optimizer="adam", loss="mse")
+
+    # Early stopping
+    early_stop = keras.callbacks.EarlyStopping(
+        patience=5, restore_best_weights=True, verbose=1
+    )
+
+    # Train
+    history = model.fit(
+        X_train, y_train,
+        validation_data=(X_val, y_val),
+        epochs=epochs,
+        batch_size=batch_size,
+        callbacks=[early_stop],
+        verbose=1
+    )
+
+    # make a plot of the true and predicted values for train and test
+    # scale back to the origional scale 
+    y_train_pred = model.predict(X_train, verbose=0)
+    y_val_pred = model.predict(X_val, verbose=0)
+    y_train_true = scaler_y.inverse_transform(y_train)
+    y_val_true = scaler_y.inverse_transform(y_val)
+    y_train_pred = scaler_y.inverse_transform(y_train_pred)
+    y_val_pred = scaler_y.inverse_transform(y_val_pred)
+    plt.figure(figsize=(12, 6))
+    plt.subplot(1, 2, 1)
+    plt.scatter(y_train_true, y_train_pred, alpha=0.01)
+    # plot it like a heatmap
+    #plt.hexbin(y_train_true, y_train_pred, gridsize=50, cmap='Blues', mincnt=1)
+    plt.plot([y_train_true.min(), y_train_true.max()], [y_train_true.min(), y_train_true.max()], 'r--')
+    plt.title("Training")
+    plt.xlabel("True -2dNLL")
+    plt.ylabel("Predicted -2dNLL")
+    plt.subplot(1, 2, 2)
+    plt.scatter(y_val_true, y_val_pred, alpha=0.01)
+    # plot it like a heatmap
+    #plt.hexbin(y_val_true, y_val_pred, gridsize=50, cmap='Blues', mincnt=1)
+    plt.plot([y_val_true.min(), y_val_true.max()], [y_val_true.min(), y_val_true.max()], 'r--')
+    plt.title("Validation")
+    plt.xlabel("True -2dNLL")
+    plt.ylabel("Predicted -2dNLL")
+    plt.tight_layout()
+    plt.savefig(f"{name}_training_results.pdf")
+    # also make a histogram plot of true-predicted values
+    plt.figure(figsize=(8, 6))
+    plt.hist((y_train_true - y_train_pred)/y_train_true, bins=50, alpha=0.5, label='Train', density=True)
+    plt.hist((y_val_true - y_val_pred)/y_val_true, bins=50, alpha=0.5, label='Validation', density=True)
+    plt.xlabel("(True - Predicted) -2dNLL")
+    plt.legend()
+    plt.savefig(f"{name}_training_results_histogram.pdf")
+
+    # make plots of loss vs epoch for training and validation
+    plt.figure(figsize=(8, 6))
+    plt.plot(history.history['loss'], label='Training Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.savefig(f"{name}_training_loss.pdf")
+
+    return model, scaler_x, scaler_y
 
 def interpolate_nll(df, interpolator, mass, rel_width, g_A, g_H):
     min_width = df["rel_width"].min()
@@ -153,7 +227,8 @@ def interpolate_nll(df, interpolator, mass, rel_width, g_A, g_H):
         result = interpolator(point)[0]
         excluded = result>cl_0p95
 
-    if result is None:
+    # define some additional default behavior depending on the values of g_A and g_H to prevent out of distribution evaluations
+    if result is None or True:
         # if g_A and g_H are less than the minimum values then we don't exclude
         min_g_A = df["g_A"].min()
         min_g_H = df["g_H"].min()
@@ -186,26 +261,61 @@ def interpolate_nll(df, interpolator, mass, rel_width, g_A, g_H):
             point[3] = g_H
             result = interpolator(point)[0]
             excluded = result > cl_0p95
-        else: 
-            print('Warning: Exclusion determination failed for parameters mass={}, rel_width={}, g_A={}, g_H={}'.format(mass, clamped_width, g_A, g_H))
-            print('This should not happen if the input data is correct.')
-            excluded = False # as backup if all else fails we don't exclude the point
+        #else: 
+        #    print('Warning: Exclusion determination failed for parameters mass={}, rel_width={}, g_A={}, g_H={}'.format(mass, clamped_width, g_A, g_H))
+        #    print('This should not happen if the input data is correct.')
+        #    excluded = False # as backup if all else fails we don't exclude the point
 
     return result, excluded
 
-# check if interpolator_data.pkl and interpolator.pkl exist
-if (os.path.exists("interpolator_data.pkl") and os.path.exists("interpolator.pkl")) or args.overwrite:
-    print("Loading existing interpolator data...")
-    df_clean = pd.read_pickle("interpolator_data.pkl")
-    with open("interpolator.pkl", "rb") as f:
-        interpolator = pickle.load(f)
+
+if args.interp_method == 'nearest':
+    name = 'interpolator_nearest'
+elif args.interp_method == 'linear':
+    name = 'interpolator_linear'
+elif args.interp_method == 'NN':
+    name = 'interpolator_NN'
+
+# check if interpolator*_data.pkl and interpolator*.pkl exist
+if (os.path.exists(f"{name}_data.pkl") and os.path.exists(f"{name}.pkl")) and not args.overwrite:
+    print("Loading existing interpolator...")
+
+    df_clean = pd.read_pickle(f"{name}_data.pkl")
+
+    if args.interp_method == 'NN':
+        with open(f"{name}_model.pkl", "rb") as f:
+            model, scalar_x, scalar_y = pickle.load(f)
+        print("Loaded NN model and scalers.")
+    else:
+        with open(f"{name}.pkl", "rb") as f:
+            interpolator = pickle.load(f)
+    
 else:
     print("Loading YAML files and building interpolator...")
     df = load_yaml_files_to_dataframe("yaml_files/XTottbarRun2/")
+    df_clean = df.dropna()
+    df_clean.to_pickle(f"{name}_data.pkl")
     print(f"Loaded {len(df)} entries from YAML files.")
     print(f"Building interpolator...")
-    interpolator, df_clean = build_interpolator(df)
+    if args.interp_method == 'NN':
+        model, scaler_x, scaler_y = train_keras_nn(df_clean)
+        # save with pickle
+        with open(f"{name}_model.pkl", "wb") as f:
+            pickle.dump((model, scaler_x, scaler_y), f)
+    else:
+        interpolator = build_interpolator(df)
 
+if args.interp_method == 'NN':
+    with open(f"{name}_model.pkl", "rb") as f:
+        model, scalar_x, scalar_y = pickle.load(f)
+    # define interpolator function for the NN model
+    def interpolator(point):
+        X = np.array([point])
+        X_scaled = scalar_x.transform(X)
+        # Use the NN model to predict the -2dNLL value
+        y_scaled = model.predict(X_scaled, verbose=0)
+        y = scalar_y.inverse_transform(y_scaled)
+        return y[0]
 
 # get MSSM benchmark file
 mssm_bm_file = f"root_files/{args.benchmark}_13.root"
@@ -219,10 +329,12 @@ h_rel_width_A = h_width_A.Clone('h_rel_width_A')
 h_rel_width_A.Divide(h_mass_A)
 
 # make a histogram which will store values of 1 when the point is excluded or 0 otherwise
-mA_range = (85,1000)
+mA_range = (300,1000)
+tanb_range = (h_mass_A.GetYaxis().GetBinLowEdge(1),5)
+Nbins=100
 
-h_excluded_exp = ROOT.TH2D('h_exp','',1000,mA_range[0],mA_range[1],1000,h_mass_A.GetYaxis().GetBinLowEdge(1),h_mass_A.GetYaxis().GetBinUpEdge(h_mass_A.GetNbinsY()))
-h_excluded_obs = ROOT.TH2D('h_obs','',1000,mA_range[0],mA_range[1],1000,h_mass_A.GetYaxis().GetBinLowEdge(1),h_mass_A.GetYaxis().GetBinUpEdge(h_mass_A.GetNbinsY()))
+h_excluded_exp = ROOT.TH2D('h_exp','',Nbins,mA_range[0],mA_range[1],Nbins,tanb_range[0],tanb_range[1])
+h_excluded_obs = ROOT.TH2D('h_obs','',Nbins,mA_range[0],mA_range[1],Nbins,tanb_range[0],tanb_range[1])
 
 count = 0
 for y in range(1,h_excluded_exp.GetNbinsY()+1):
@@ -249,7 +361,7 @@ for y in range(1,h_excluded_exp.GetNbinsY()+1):
         count += 1
 
 # save the histograms
-fout = ROOT.TFile(f'{args.benchmark}_XToTTbar_mAtanb_contours.root', 'recreate')
+fout = ROOT.TFile(f'{args.benchmark}_XToTTbar_mAtanb_contours_{args.interp_method}_test.root', 'recreate')
 h_excluded_exp.Write("h_exp_excluded")
 h_excluded_obs.Write("h_obs_excluded")
 
