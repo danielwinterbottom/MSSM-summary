@@ -2,11 +2,12 @@ import os
 import yaml
 import pandas as pd
 import re
-from scipy.interpolate import NearestNDInterpolator
+from scipy.interpolate import NearestNDInterpolator, LinearNDInterpolator
 import ROOT
 import argparse
 import pickle
 from contour_tools import *
+from random import random
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--benchmark', type=str, default='mh125EFT', help='Benchmark scenario')
@@ -115,7 +116,8 @@ def load_yaml_files_to_dataframe(directory):
 
 def build_interpolator(df):
     df_clean = df.dropna()
-    interpolator = NearestNDInterpolator(
+    #interpolator = NearestNDInterpolator(
+    interpolator = LinearNDInterpolator(
         df_clean[["mass", "rel_width", "g_A", "g_H"]],
         df_clean["-2dNLL"]
     )
@@ -219,8 +221,8 @@ h_rel_width_A.Divide(h_mass_A)
 # make a histogram which will store values of 1 when the point is excluded or 0 otherwise
 mA_range = (85,1000)
 
-h_excluded_exp = ROOT.TH2D('h_exp','',100,mA_range[0],mA_range[1],100,h_mass_A.GetYaxis().GetBinLowEdge(1),h_mass_A.GetYaxis().GetBinUpEdge(h_mass_A.GetNbinsY()))
-h_excluded_obs = ROOT.TH2D('h_obs','',100,mA_range[0],mA_range[1],100,h_mass_A.GetYaxis().GetBinLowEdge(1),h_mass_A.GetYaxis().GetBinUpEdge(h_mass_A.GetNbinsY()))
+h_excluded_exp = ROOT.TH2D('h_exp','',1000,mA_range[0],mA_range[1],1000,h_mass_A.GetYaxis().GetBinLowEdge(1),h_mass_A.GetYaxis().GetBinUpEdge(h_mass_A.GetNbinsY()))
+h_excluded_obs = ROOT.TH2D('h_obs','',1000,mA_range[0],mA_range[1],1000,h_mass_A.GetYaxis().GetBinLowEdge(1),h_mass_A.GetYaxis().GetBinUpEdge(h_mass_A.GetNbinsY()))
 
 count = 0
 for y in range(1,h_excluded_exp.GetNbinsY()+1):
@@ -235,18 +237,21 @@ for y in range(1,h_excluded_exp.GetNbinsY()+1):
         g_H = abs(h_g_H.Interpolate(mA, tanb))
 
         est_nll, excluded = interpolate_nll(df_clean, interpolator, mass=mA, rel_width=rel_width, g_A=g_A, g_H=g_H)
-        h_excluded_exp.SetBinContent(x, y, int(excluded))
+        
         h_excluded_obs.SetBinContent(x, y, int(excluded))
+        # no excluded version provided for now so just use observed as place holder
+        h_excluded_exp.SetBinContent(x, y, int(excluded))
 
-        # print the info every 100 points
-        if count % 100 == 0:
+        # print the info every 1/1000 events randomly
+        rand = random()
+        if rand < 0.001:
             print(f"mA={mA}, tanb={tanb}, g_A={g_A}, g_H={g_H}, rel_width={rel_width}, -2dNLL={est_nll}, Excluded={excluded}")
         count += 1
 
 # save the histograms
 fout = ROOT.TFile(f'{args.benchmark}_XToTTbar_mAtanb_contours.root', 'recreate')
-h_excluded_exp.Write("h_excluded_exp")
-h_excluded_obs.Write("h_excluded_obs")
+h_excluded_exp.Write("h_exp_excluded")
+h_excluded_obs.Write("h_obs_excluded")
 
 # get countours from 2D histograms 
 contours_obs = contourFromTH2(h_excluded_obs,1.)
