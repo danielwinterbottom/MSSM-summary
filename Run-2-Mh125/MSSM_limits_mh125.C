@@ -20,7 +20,7 @@ void MSSM_limits_mh125(){
   // switch off stats box
   gStyle->SetOptStat(0);
   // define canvas  
-  TCanvas* canv = squared_legend_to_right(90.,2000.,5.,60.); //float lower_x=130., float upper_x=2100., float lower_y=1., float upper_y=60.
+  TCanvas* canv = squared_legend_to_right(90.,2000.,5.,60., 1, 1, true, true); //float lower_x=130., float upper_x=2100., float lower_y=1., float upper_y=60.
     // define legend
   TLegend* leg0_ = new TLegend(0.67, 0.10, 0.97, 0.94);
   leg0_->SetBorderSize(1);
@@ -42,33 +42,15 @@ void MSSM_limits_mh125(){
 
 -----------------------------------------------------------------------------*/  
 
-  /*-------------------------------------------------------------------------*/ 
-  /* Preview HIG-22-001                                                      */
-//  TGraph* g8 = Contour(HIG_22_001_hWW_exp, NULL, kYellow+2, kYellow, tYellow->GetNumber(), false); 
-//  leg0_->AddEntry(g8 , "#splitline{h(125) (h#rightarrow WW)}{Nature 607 (2022) 60^{#scale[1.6]{ #club}}}", "F");
-  /*-------------------------------------------------------------------------*/ 
-//  TGraph* g1 = Contour(HIG_18_010_exp, HIG_18_010_obs, kYellow+2, kYellow, tYellow->GetNumber(), true); 
-//  leg0_->AddEntry(g1, "#splitline{H/A #rightarrow #mu#mu}{PLB 798 (2019) 134922}", "F");
-//  TGraph* g2 = Contour(HIG_16_018_exp, HIG_16_018_obs, kCyan+2, kCyan, tCyan->GetNumber(), true); 
-//  leg0_->AddEntry(g2, "#splitline{H/A #rightarrow bb}{JHEP 08 (2018) 113}", "F");
-//  TGraph* g3 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
-//  leg0_->AddEntry(g3, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
-//  TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
-//  leg0_->AddEntry(g4, "#splitline{H #rightarrow WW(2l2#nu)}{(HIG-20-016)^{#scale[1.6]{ #club}}}", "F"); //remove WW as it doesnt show up outside the mh!=125 region
-//  TGraph* g5 = Contour(HIG_21_011_exp, HIG_21_011_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-//  leg0_->AddEntry(g5 , "#splitline{H #rightarrow hh (bb#gamma#gamma)}{(HIG-21-011)^{#scale[1.6]{ #club}}}", "F");
-//  TGraph* g6 = Contour(HIG_21_005_exp, HIG_21_005_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
-//  leg0_->AddEntry(g6 , "#splitline{H #rightarrow hh (bbWW)}{(HIG-21-005)^{#scale[1.6]{ #club}}}", "F");
-
   TGraph* g1 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true);
-  leg0_->AddEntry(g1, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
+  leg0_->AddEntry(g1, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73}", "F");
   TGraph* g2 = Contour(HIG_24_002_exp, HIG_24_002_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false);
-  leg0_->AddEntry(g2, "#splitline{H #rightarrow ZZ}{HIG-24-002^{#scale[1.6]{ #club}}}", "F");
+  leg0_->AddEntry(g2, "#splitline{H #rightarrow ZZ}{HIG-24-002}", "F");
 
   //TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kCyan+2, kCyan, tCyan->GetNumber(), false);
-  //leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{HIG-20-016^{#scale[1.6]{ #club}}}", "F");
+  //leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{HIG-20-016}", "F");
   TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false);
-  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{Phys. Rep. 1115 (2025) 368^{#scale[1.6]{ #club}}}", "F");
+  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{Phys. Rep. 1115 (2025) 368}", "F");
 
   TGraph* dummy = new TGraph();  
   dummy->SetFillColor(kWhite);
@@ -111,13 +93,6 @@ void MSSM_limits_mh125(){
   extra->Draw("same");  
 
   leg0_->Draw("same");
-  TLatex* tex;
-  tex = new TLatex();
-  tex->SetNDC();
-  tex->SetTextAlign(11);
-  tex->SetTextFont(43);
-  tex->SetTextSize(20);
-  tex->DrawLatex(0.88, 0.057, "^{#scale[1.4]{#club}} 138 fb^{-1}");
   leg1_->Draw("same");
 
   canv->Update();
