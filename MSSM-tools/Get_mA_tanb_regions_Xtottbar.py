@@ -7,7 +7,7 @@ import ROOT
 import argparse
 import pickle
 from contour_tools import *
-from random import random
+import random
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -21,6 +21,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--benchmark', type=str, default='mh125EFT', help='Benchmark scenario')
 parser.add_argument('--overwrite', action='store_true', help='Overwrite existing interpolator data')
 parser.add_argument('--interp_method', type=str, default='nearest', choices=['nearest','linear','NN'], help='Interpolation method to use')
+parser.add_argument('--test_rm_mass', action='store_true', help='Removes half of the mass points from the dataset for testing purposes')
+parser.add_argument('--test_rm_random', action='store_true', help='Removes half of the mass/width points randomly from the dataset for testing purposes')
 args = parser.parse_args()
 
 def parse_filename(filename):
@@ -81,6 +83,13 @@ def load_yaml_files_to_dataframe(directory):
         g_H_values = get_all_values(indep_vars, "$g_{H t \\bar t}$")
         nll_values = get_all_values(dep_vars, "-2dNLL")
 
+        # check nll_values for negative values
+        if any(nll < 0 for nll in nll_values):
+            # if negatives are found then shift all the values by the minimum value
+            print(f"Warning: Negative -2dNLL values found in file {file}. Shifting all values to be non-negative.")
+            min_nll = min(nll_values)
+            nll_values = [nll - min_nll for nll in nll_values]
+
         # Sanity check lengths
         n_entries = min(len(g_A_values), len(g_H_values), len(nll_values))
 
@@ -93,6 +102,23 @@ def load_yaml_files_to_dataframe(directory):
                 "-2dNLL": nll_values[i],
             }
             data.append(row)
+
+    if args.test_rm_mass:
+        # Remove half of the mass points for testing
+        unique_masses = list(set(row["mass"] for row in data))
+        if len(unique_masses) > 1:
+            # remove odd indexes from the list of unique masses
+            half_masses = [unique_masses[i] for i in range(len(unique_masses)) if i % 2 == 0]
+            data = [row for row in data if row["mass"] not in half_masses]
+            print(f"Removed half of the mass points for testing: {half_masses}")
+    elif args.test_rm_random:
+        # Remove half of the mass/width points randomly for testing
+        unique_points = list(set((row["mass"], row["rel_width"]) for row in data))
+        if len(unique_points) > 1:
+            # Randomly select half of the unique points to remove
+            half_points = set(random.sample(unique_points, k=len(unique_points) // 2))
+            data = [row for row in data if (row["mass"], row["rel_width"]) not in half_points]
+            print(f"Removed half of the mass/width points for testing: {half_points}")
 
     return pd.DataFrame(data)
 
@@ -110,6 +136,11 @@ def build_interpolator(df):
             df[["mass", "rel_width", "g_A", "g_H"]],
             df["-2dNLL"]
         )
+
+    if args.test_rm_mass:
+        name += "_test_rm_mass"
+    elif args.test_rm_random:
+        name += "_test_rm_random"
 
     # store these as pkl files for later use
     interpolator_file = f"{name}.pkl"
@@ -228,43 +259,38 @@ def interpolate_nll(df, interpolator, mass, rel_width, g_A, g_H):
         excluded = result>cl_0p95
 
     # define some additional default behavior depending on the values of g_A and g_H to prevent out of distribution evaluations
-    if result is None or True:
-        # if g_A and g_H are less than the minimum values then we don't exclude
-        min_g_A = df["g_A"].min()
-        min_g_H = df["g_H"].min()
-        max_g_A = df["g_A"].max()
-        max_g_H = df["g_H"].max()
-        if g_A < min_g_A and g_H < min_g_H:
-            excluded = False
-        # if only one of g_A or g_H is below the minimum then set it to the minimum value and re-evaluate
-        elif g_A < min_g_A:
-            g_A = min_g_A
-            point[2] = g_A
-            result = interpolator(point)[0]
-            excluded = result > cl_0p95
-        elif g_H < min_g_H:
-            g_H = min_g_H
-            point[3] = g_H
-            result = interpolator(point)[0]
-            excluded = result > cl_0p95
-        # if both are larger than the maximum values then don't exclude
-        elif g_A > max_g_A and g_H > max_g_H:
-            excluded = False
-        # if only one is larger than the maximum then set it to the maximum value and re-evaluate
-        elif g_A > max_g_A:
-            g_A = max_g_A
-            point[2] = g_A
-            result = interpolator(point)[0]
-            excluded = result > cl_0p95
-        elif g_H > max_g_H:
-            g_H = max_g_H
-            point[3] = g_H
-            result = interpolator(point)[0]
-            excluded = result > cl_0p95
-        #else: 
-        #    print('Warning: Exclusion determination failed for parameters mass={}, rel_width={}, g_A={}, g_H={}'.format(mass, clamped_width, g_A, g_H))
-        #    print('This should not happen if the input data is correct.')
-        #    excluded = False # as backup if all else fails we don't exclude the point
+    # if g_A and g_H are less than the minimum values then we don't exclude
+    min_g_A = df["g_A"].min()
+    min_g_H = df["g_H"].min()
+    max_g_A = df["g_A"].max()
+    max_g_H = df["g_H"].max()
+    if g_A < min_g_A and g_H < min_g_H:
+        excluded = False
+    # if only one of g_A or g_H is below the minimum then set it to the minimum value and re-evaluate
+    elif g_A < min_g_A:
+        g_A = min_g_A
+        point[2] = g_A
+        result = interpolator(point)[0]
+        excluded = result > cl_0p95
+    elif g_H < min_g_H:
+        g_H = min_g_H
+        point[3] = g_H
+        result = interpolator(point)[0]
+        excluded = result > cl_0p95
+    # if both are larger than the maximum values then don't exclude
+    elif g_A > max_g_A and g_H > max_g_H:
+        excluded = False
+    # if only one is larger than the maximum then set it to the maximum value and re-evaluate
+    elif g_A > max_g_A:
+        g_A = max_g_A
+        point[2] = g_A
+        result = interpolator(point)[0]
+        excluded = result > cl_0p95
+    elif g_H > max_g_H:
+        g_H = max_g_H
+        point[3] = g_H
+        result = interpolator(point)[0]
+        excluded = result > cl_0p95
 
     return result, excluded
 
@@ -275,6 +301,11 @@ elif args.interp_method == 'linear':
     name = 'interpolator_linear'
 elif args.interp_method == 'NN':
     name = 'interpolator_NN'
+
+if args.test_rm_mass:
+    name += "_test_rm_mass"
+elif args.test_rm_random:
+    name += "_test_rm_random"
 
 # check if interpolator*_data.pkl and interpolator*.pkl exist
 if (os.path.exists(f"{name}_data.pkl") and os.path.exists(f"{name}.pkl")) and not args.overwrite:
@@ -356,6 +387,7 @@ for y in range(1,h_excluded_exp.GetNbinsY()+1):
         g_A = abs(h_g_A.Interpolate(mA, tanb)) # we take absolute values as H/A->ttbar search not sensitive to the sign
         g_H = abs(h_g_H.Interpolate(mA, tanb))
 
+        #TODO: for the NN this can be sped up by applying the model to an array of points instead of one by one
         est_nll, excluded = interpolate_nll(df_clean, interpolator, mass=mA, rel_width=rel_width, g_A=g_A, g_H=g_H)
         
         h_excluded_obs.SetBinContent(x, y, int(excluded))
@@ -363,19 +395,25 @@ for y in range(1,h_excluded_exp.GetNbinsY()+1):
         h_excluded_exp.SetBinContent(x, y, int(excluded))
 
         # print the info every 1/1000 events randomly
-        rand = random()
+        rand = random.random()
         if rand < 0.001:
             print(f"mA={mA}, tanb={tanb}, g_A={g_A}, g_H={g_H}, rel_width={rel_width}, -2dNLL={est_nll}, Excluded={excluded}")
         count += 1
 
 # save the histograms
-fout = ROOT.TFile(f'{args.benchmark}_XToTTbar_mAtanb_contours_{args.interp_method}_test.root', 'recreate')
-h_excluded_exp.Write("h_exp_excluded")
+name_extra=''
+if args.test_rm_mass:
+    name_extra = '_test_rm_mass'
+elif args.test_rm_random:
+    name_extra = '_test_rm_random'
+fout = ROOT.TFile(f'{args.benchmark}_XToTTbar_mAtanb_contours_{args.interp_method}{name_extra}.root', 'recreate')
+# don't write expected contours since they are just a copy of the observed ones for now
+#h_excluded_exp.Write("h_exp_excluded")
 h_excluded_obs.Write("h_obs_excluded")
 
 # get countours from 2D histograms 
-contours_obs = contourFromTH2(h_excluded_obs,1.)
-contours_exp = contourFromTH2(h_excluded_exp,1.)
+contours_obs = contourFromTH2(h_excluded_obs,1.,frameValue=0.)
+#contours_exp = contourFromTH2(h_excluded_exp,1.,frameValue=0.)
 
 # store integer indicating the number of contours on the output file
 n_contours = len(contours_obs)
@@ -383,10 +421,10 @@ fout.WriteObject(ROOT.TParameter("int")("n_contours", n_contours), 'n_contours')
 
 # sort countours them by the number of points in the graphs (largest first)
 contours_obs = sorted(contours_obs, key=lambda x: x.GetN(), reverse=True)
-contours_exp = sorted(contours_exp, key=lambda x: x.GetN(), reverse=True)
+#contours_exp = sorted(contours_exp, key=lambda x: x.GetN(), reverse=True)
 
 # now write all contours to the output file
 for i, c in enumerate(contours_obs):
     c.Write(f'contour_obs_{i}')
-for i, c in enumerate(contours_exp):
-    c.Write(f'contour_exp_{i}')
+#for i, c in enumerate(contours_exp):
+#    c.Write(f'contour_exp_{i}')

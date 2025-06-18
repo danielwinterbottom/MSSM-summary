@@ -3,7 +3,7 @@
 
 TGraph* B2G_23_002_obs(bool filled){
  // get limits directly from ROOT file
- TFile *f = new TFile("hMSSM_gg+bbToHTohh_mAtanb_contours.root");
+ TFile *f = new TFile("hMSSM_ggToHTohh_mAtanb_contours.root");
  TGraph* graph = (TGraph*)f->Get("contour_obs_0"); 
 
   return graph;
@@ -11,7 +11,7 @@ TGraph* B2G_23_002_obs(bool filled){
 
 TGraph* B2G_23_002_exp(){
 
-  TFile *f = new TFile("hMSSM_gg+bbToHTohh_mAtanb_contours.root");
+  TFile *f = new TFile("hMSSM_ggToHTohh_mAtanb_contours.root");
   TGraph* graph = (TGraph*)f->Get("contour_exp_0");
 
   return graph;
