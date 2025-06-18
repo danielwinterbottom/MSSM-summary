@@ -113,7 +113,7 @@ TCanvas* squared_legend_to_right(float lower_x=130., float upper_x=2100., float 
   tex->SetTextFont(42);
   tex->SetLineWidth(2);
   tex->SetTextSize(0.035);
-  if(inc_partial_lum) tex->DrawLatex(0.42,0.95,"35.9-138 fb^{-1} (13 TeV)");
+  if(inc_partial_lum) tex->DrawLatex(0.44,0.95,"35.9-138 fb^{-1} (13 TeV)");
   else tex->DrawLatex(0.49,0.95,"138 fb^{-1} (13 TeV)");
 
   return canv;

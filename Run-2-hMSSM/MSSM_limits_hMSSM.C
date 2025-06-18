@@ -5,13 +5,13 @@
 #include "HIG-21-001.h"
 #include "HIG-21-005.h"
 #include "HIG-21-011.h"
-#include "HIG-17-027.h"
 #include "HIG-17-031.h"
 #include "HIG-18-010.h"
 #include "HIG-18-005.h"
 #include "HIG-18-023.h"
 #include "HIG-20-016.h"
 #include "HIG-24-002.h"
+#include "HIG-22-013.h"
 
 void MSSM_limits_hMSSM(){
 /*-----------------------------------------------------------------------------
@@ -27,7 +27,7 @@ void MSSM_limits_hMSSM(){
   TLegend* leg0_ = new TLegend(0.67, 0.10, 0.97, 0.94);
   leg0_->SetBorderSize(1);
   leg0_->SetFillStyle (1001);
-  leg0_->SetTextSize(0.036);
+  leg0_->SetTextSize(0.034);
   leg0_->SetFillColor (kWhite);
   TGraph* obs = new TGraph(); obs->SetFillColor(kGray);
   TGraph* exp = new TGraph(); 
@@ -44,21 +44,17 @@ void MSSM_limits_hMSSM(){
 
 -----------------------------------------------------------------------------*/
   TGraph* g1 = Contour(HIG_17_031_exp, HIG_17_031_obs, kCombDark->GetNumber(), kComb->GetNumber(), tComb->GetNumber(),false); 
-  leg0_->AddEntry(g1, "#splitline{h(125)}{EPJC 79 (2019) 421}", "F");
-
-  TGraph* g7 = Contour(HIG_24_002_exp, HIG_24_002_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false);
-  leg0_->AddEntry(g7, "#splitline{H #rightarrow ZZ}{HIG-24-002^{#scale[1.6]{ #club}}}", "F");
-
+  leg0_->AddEntry(g1, "#splitline{h(125)}{EPJC 79 (2019) 421^{#scale[1.6]{ #club}}}", "F");
   TGraph* g2 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
-  leg0_->AddEntry(g2, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
-  TGraph* g3 = Contour(HIG_17_027_exp, HIG_17_027_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
+  leg0_->AddEntry(g2, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73}", "F");
+  TGraph* g7 = Contour(HIG_24_002_exp, HIG_24_002_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false);
+  leg0_->AddEntry(g7, "#splitline{H #rightarrow ZZ}{HIG-24-002}", "F");
+  TGraph* g3 = Contour(HIG_22_013_exp, HIG_22_013_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
   leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{JHEP 04 (2020) 171}", "F");
   TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kCyan+2, kCyan, tCyan->GetNumber(), false);
-  leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{HIG-20-016^{#scale[1.6]{ #club}}}", "F");
-  TGraph* g5 = Contour(HIG_18_023_exp, HIG_18_023_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
-  leg0_->AddEntry(g5, "#splitline{A #rightarrow Zh (ll#tau#tau)}{JHEP 03 (2020) 65}", "F");
+  leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{HIG-20-016}", "F");
   TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g6, "#splitline{H#rightarrow hh}{Phys. Rep. 1115 (2025) 368^{#scale[1.6]{ #club}}}", "F");
+  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{#splitline{Phys. Rep. 1115}{(2025) 368}}", "F");
 
 /*-----------------------------------------------------------------------------
 
@@ -83,7 +79,7 @@ void MSSM_limits_hMSSM(){
   tex->SetTextAlign(11);
   tex->SetTextFont(43);
   tex->SetTextSize(20);
-  tex->DrawLatex(0.88, 0.057, "^{#scale[1.4]{#club}} 138 fb^{-1}");
+  tex->DrawLatex(0.88, 0.057, "^{#scale[1.4]{#club}} 35.9 fb^{-1}");
   tex->DrawLatex(0.105, 0.057, "130");
 
   canv->Update();

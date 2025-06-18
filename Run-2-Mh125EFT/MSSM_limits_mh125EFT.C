@@ -1,7 +1,6 @@
 #include "../Common.h"
 #include "B2G-23-002.h"
 #include "HIG-18-005.h"
-#include "HIG-17-027.h"
 #include "HIG-21-001.h"
 #include "HIG-22-004.h"
 #include "HIG-20-016.h"
@@ -20,21 +19,21 @@ void MSSM_limits_mh125EFT(){
   gStyle->SetOptStat(0);
   // define canvas  
   TCanvas* canv = squared_legend_to_right(90., 1400., 1., 10., 1, 1, true, false);
-    // define legend
-  TLegend* leg0_ = new TLegend(0.67, 0.1, 0.97, 0.94);
+  // define legend
+  TLegend* leg0_ = new TLegend(0.67, 0.10, 0.97, 0.94);
   leg0_->SetBorderSize(1);
   leg0_->SetFillStyle (1001);
-  leg0_->SetTextSize(0.032); //0.036
+  leg0_->SetTextSize(0.034);
   leg0_->SetFillColor (kWhite);
   TGraph* obs = new TGraph(); obs->SetFillColor(kGray);
-  TGraph* exp = new TGraph(); 
-  exp->SetLineColor(1.); 
-  exp->SetFillColor(1.); 
-  exp->SetLineWidth(303); 
-  exp->SetFillStyle(3004);     
-  leg0_->AddEntry(obs, "#splitline{Observed}{exclusion 95% CL}", "F");  
+  TGraph* exp = new TGraph();
+  exp->SetLineColor(1.);
+  exp->SetFillColor(1.);
+  exp->SetLineWidth(303);
+  exp->SetFillStyle(3004);
+  leg0_->AddEntry(obs, "#splitline{Observed}{exclusion 95% CL}", "F");
   leg0_->AddEntry(exp, "#splitline{Expected}{exclusion 95% CL}", "L");
-  
+
 /*-----------------------------------------------------------------------------
 
  Plotting (contours will be drawn on top of each other according to this order)
@@ -53,7 +52,6 @@ void MSSM_limits_mh125EFT(){
   TGraph* g5 = Contour(HIG_22_004_exp, HIG_22_004_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
   leg0_->AddEntry(g5, "#splitline{A #rightarrow Zh (ll#tau#tau)}{HIG-22-004}", "F");
   TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-//  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{Phys. Rep. 1115 (2025) 368}", "F");
   leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{#splitline{Phys. Rep. 1115}{(2025) 368}}", "F");
 
   // eligibility line for the given benchmark
@@ -70,7 +68,6 @@ void MSSM_limits_mh125EFT(){
   TGraph* dummy = new TGraph();  
   dummy->SetFillColor(kWhite);
   dummy->SetLineColor(kWhite);
-  leg0_->AddEntry(dummy, "", "F");  
   //leg0_->AddEntry(dummy, "", "F");  
   
 /*-----------------------------------------------------------------------------
