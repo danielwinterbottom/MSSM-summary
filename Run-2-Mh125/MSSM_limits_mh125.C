@@ -20,7 +20,7 @@ void MSSM_limits_mh125(){
   // switch off stats box
   gStyle->SetOptStat(0);
   // define canvas  
-  TCanvas* canv = squared_legend_to_right(90.,2000.,5.,60., 1, 1, true, true); //float lower_x=130., float upper_x=2100., float lower_y=1., float upper_y=60.
+  TCanvas* canv = squared_legend_to_right(90.,2000.,5.,60., 1, 1, true, false); //float lower_x=130., float upper_x=2100., float lower_y=1., float upper_y=60.
     // define legend
   TLegend* leg0_ = new TLegend(0.67, 0.10, 0.97, 0.94);
   leg0_->SetBorderSize(1);
