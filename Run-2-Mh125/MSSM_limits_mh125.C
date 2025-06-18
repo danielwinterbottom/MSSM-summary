@@ -68,7 +68,7 @@ void MSSM_limits_mh125(){
   //TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kCyan+2, kCyan, tCyan->GetNumber(), false);
   //leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{HIG-20-016^{#scale[1.6]{ #club}}}", "F");
   TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false);
-  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{Phys. Rep. 1115 (2024) 368^{#scale[1.6]{ #club}}}", "F");
+  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{Phys. Rep. 1115 (2025) 368^{#scale[1.6]{ #club}}}", "F");
 
   TGraph* dummy = new TGraph();  
   dummy->SetFillColor(kWhite);
