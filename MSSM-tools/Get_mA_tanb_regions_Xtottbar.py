@@ -2,28 +2,20 @@ import os
 import yaml
 import pandas as pd
 import re
-from scipy.interpolate import NearestNDInterpolator, LinearNDInterpolator
+from scipy.interpolate import NearestNDInterpolator, LinearNDInterpolator, RBFInterpolator
 import ROOT
 import argparse
 import pickle
 from contour_tools import *
 import random
 import matplotlib.pyplot as plt
-
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--benchmark', type=str, default='mh125EFT', help='Benchmark scenario')
 parser.add_argument('--overwrite', action='store_true', help='Overwrite existing interpolator data')
-parser.add_argument('--interp_method', type=str, default='nearest', choices=['nearest','linear','NN'], help='Interpolation method to use')
-parser.add_argument('--test_rm_mass', action='store_true', help='Removes half of the mass points from the dataset for testing purposes')
+parser.add_argument('--interp_method', type=str, default='nearest', choices=['nearest','linear','RBF'], help='Interpolation method to use')
 parser.add_argument('--test_rm_width', action='store_true', help='Removes half of the width points from the dataset for testing purposes')
-parser.add_argument('--test_rm_random', action='store_true', help='Removes half of the mass/width points randomly from the dataset for testing purposes')
 args = parser.parse_args()
 
 def parse_filename(filename):
@@ -104,15 +96,12 @@ def load_yaml_files_to_dataframe(directory):
             }
             data.append(row)
 
-    if args.test_rm_mass:
-        # Remove half of the mass points for testing
-        unique_masses = list(set(row["mass"] for row in data))
-        if len(unique_masses) > 1:
-            # remove odd indexes from the list of unique masses
-            half_masses = [unique_masses[i] for i in range(len(unique_masses)) if i % 2 == 0]
-            data = [row for row in data if row["mass"] not in half_masses]
-            print(f"Removed half of the mass points for testing: {half_masses}")
-    elif args.test_rm_width:
+    unique_masses = list(set(row["mass"] for row in data))
+    # sort unique masses, smallest first
+    unique_masses.sort()
+    print(f"Unique masses found: {unique_masses}")
+
+    if args.test_rm_width:
         # Remove half of the width points for testing
         unique_widths = list(set(row["rel_width"] for row in data))
         if len(unique_widths) > 1:
@@ -121,253 +110,149 @@ def load_yaml_files_to_dataframe(directory):
             half_widths = [unique_widths[i] for i in range(len(unique_widths)) if i % 2 == 1] # remove middle width (usually there are only 3 points provided)
             data = [row for row in data if row["rel_width"] not in half_widths]
             print(f"Removed half of the width points for testing: {half_widths}")
-    elif args.test_rm_random:
-        # Remove half of the mass/width points randomly for testing
-        unique_points = list(set((row["mass"], row["rel_width"]) for row in data))
-        if len(unique_points) > 1:
-            # Randomly select half of the unique points to remove
-            half_points = set(random.sample(unique_points, k=len(unique_points) // 2))
-            data = [row for row in data if (row["mass"], row["rel_width"]) not in half_points]
-            print(f"Removed half of the mass/width points for testing: {half_points}")
 
-    return pd.DataFrame(data)
+    return pd.DataFrame(data), unique_masses
 
-def build_interpolator(df):
-    #interpolator = NearestNDInterpolator(
+def build_interpolator(df, masses):
+    interpolator_map = {}
     if args.interp_method == 'nearest':
         name = 'interpolator_nearest'
-        interpolator = NearestNDInterpolator(
-            df[["mass", "rel_width", "g_A", "g_H"]],
-            df["-2dNLL"]
-        )
     elif args.interp_method == 'linear':
         name = 'interpolator_linear'
-        interpolator = LinearNDInterpolator(
-            df[["mass", "rel_width", "g_A", "g_H"]],
-            df["-2dNLL"]
-        )
+    elif args.interp_method == 'RBF':
+        name = 'interpolator_RBF'
+    # build a seperate interpolator for each mass point
+    for m in masses:
+        print(f"Building interpolator for mass {m} GeV...")
+        df_m = df[df["mass"] == m]
+        x = df_m[["rel_width", "g_A", "g_H"]]
+        y = df_m["-2dNLL"]
+        if df_m.empty:
+            print(f"No data for mass {m}, skipping...")
+            continue
 
-    if args.test_rm_mass:
-        name += "_test_rm_mass"
-    elif args.test_rm_width:
+        if args.interp_method == 'nearest': interpolator = NearestNDInterpolator(x,y)
+        elif args.interp_method == 'linear': interpolator = LinearNDInterpolator(x,y)
+        elif args.interp_method == 'RBF': interpolator = RBFInterpolator(x, y)  # smooth=0.0 for exact interpolation
+    
+        interpolator_map[m] = interpolator
+    print(f"Built interpolators for {len(interpolator_map)} mass points.")
+
+    name+=f"_{args.benchmark}"
+    if args.test_rm_width:
         name += "_test_rm_width"
-    elif args.test_rm_random:
-        name += "_test_rm_random"
 
     # store these as pkl files for later use
     interpolator_file = f"{name}.pkl"
+    print(f"Saving interpolator to {interpolator_file}...")
     with open(interpolator_file, "wb") as f:
-        pickle.dump(interpolator, f)
-    return interpolator
-
-def train_keras_nn(df, epochs=50, batch_size=32):
-    X = df[["mass", "rel_width", "g_A", "g_H"]].values
-    y = df["-2dNLL"].values.reshape(-1, 1)
-
-    # Scale features and target
-    scaler_x = MinMaxScaler()
-    scaler_y = MinMaxScaler()
-    X_scaled = scaler_x.fit_transform(X)
-    y_scaled = scaler_y.fit_transform(y)
-
-    # Split into training and validation sets
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_scaled, y_scaled, test_size=0.1, random_state=42
-    )
-
-    # Define model
-    model = keras.Sequential([
-        layers.Input(shape=(4,)),
-        layers.Dense(64, activation="relu"),
-        layers.Dense(64, activation="relu"),
-        layers.Dense(1)
-    ])
-
-    model.compile(optimizer="adam", loss="mse")
-
-    # Early stopping
-    early_stop = keras.callbacks.EarlyStopping(
-        patience=5, restore_best_weights=True, verbose=1
-    )
-
-    # Train
-    history = model.fit(
-        X_train, y_train,
-        validation_data=(X_val, y_val),
-        epochs=epochs,
-        batch_size=batch_size,
-        callbacks=[early_stop],
-        verbose=1
-    )
-
-    # make a plot of the true and predicted values for train and test
-    # scale back to the origional scale 
-    y_train_pred = model.predict(X_train, verbose=0)
-    y_val_pred = model.predict(X_val, verbose=0)
-    y_train_true = scaler_y.inverse_transform(y_train)
-    y_val_true = scaler_y.inverse_transform(y_val)
-    y_train_pred = scaler_y.inverse_transform(y_train_pred)
-    y_val_pred = scaler_y.inverse_transform(y_val_pred)
-    plt.figure(figsize=(12, 6))
-    plt.subplot(1, 2, 1)
-    plt.scatter(y_train_true, y_train_pred, alpha=0.01)
-    # plot it like a heatmap
-    #plt.hexbin(y_train_true, y_train_pred, gridsize=50, cmap='Blues', mincnt=1)
-    plt.plot([y_train_true.min(), y_train_true.max()], [y_train_true.min(), y_train_true.max()], 'r--')
-    plt.title("Training")
-    plt.xlabel("True -2dNLL")
-    plt.ylabel("Predicted -2dNLL")
-    plt.subplot(1, 2, 2)
-    plt.scatter(y_val_true, y_val_pred, alpha=0.01)
-    # plot it like a heatmap
-    #plt.hexbin(y_val_true, y_val_pred, gridsize=50, cmap='Blues', mincnt=1)
-    plt.plot([y_val_true.min(), y_val_true.max()], [y_val_true.min(), y_val_true.max()], 'r--')
-    plt.title("Validation")
-    plt.xlabel("True -2dNLL")
-    plt.ylabel("Predicted -2dNLL")
-    plt.tight_layout()
-    plt.savefig(f"{name}_training_results.pdf")
-    # also make a histogram plot of true-predicted values
-    plt.figure(figsize=(8, 6))
-    plt.hist(y_train_true - y_train_pred, bins=50, alpha=0.5, label='Train', density=True)
-    plt.hist(y_val_true - y_val_pred, bins=50, alpha=0.5, label='Validation', density=True)
-    plt.xlabel("(True - Predicted) -2dNLL")
-    plt.legend()
-    plt.savefig(f"{name}_training_results_histogram.pdf")
-
-    # make plots of loss vs epoch for training and validation
-    plt.figure(figsize=(8, 6))
-    plt.plot(history.history['loss'], label='Training Loss')
-    plt.plot(history.history['val_loss'], label='Validation Loss')
-    plt.xlabel("Epoch")
-    plt.ylabel("Loss")
-    plt.legend()
-    plt.savefig(f"{name}_training_loss.pdf")
-
-    return model, scaler_x, scaler_y
+        pickle.dump(interpolator_map, f)
+    return interpolator_map
 
 def interpolate_nll(df, interpolator, mass, rel_width, g_A, g_H):
-    min_width = df["rel_width"].min()
-    clamped_width = max(rel_width, min_width)
-    #if rel_width < min_width:
-    #    print(f"Width {rel_width} is below minimum {min_width}; using {clamped_width} instead.")
-
-    point = [mass, clamped_width, g_A, g_H]
-
     cl_0p95 = ROOT.Math.chisquared_quantile_c(1 - 0.95, 2)
+    nearest_interpolator = NearestNDInterpolator(df[["rel_width", "g_A", "g_H"]], df["-2dNLL"]) # used as fall back incase linear interpolator fails
+
+    # if the width is smaller than the smallest width in the dataset then we clamp it to the smallest width - i.e we assume we are beyond the NWA limit
+    min_width = df[df["mass"] == mass]["rel_width"].min()
+    clamped_width = max(rel_width, min_width)
+    point = [clamped_width, g_A, g_H]
+
+    max_width = df[df["mass"] == mass]["rel_width"].max()
+    min_g_A = df[df["mass"] == mass]["g_A"].min()
+    min_g_H = df[df["mass"] == mass]["g_H"].min()
+    max_g_A = df[df["mass"] == mass]["g_A"].max()
+    max_g_H = df[df["mass"] == mass]["g_H"].max()
     
-    # define some default behavior depending on the values of the parameters
-    # if mass is < minimum mass or > maximum mass in dataframe then don't exclude
-    # if width is larger than maximum width in dataframe then don't exclude
-    min_mass = df["mass"].min()
-    max_mass = df["mass"].max()
-    max_width = df["rel_width"].max()
+    # print all max and min values for g_A, g_H, and width
+    #print(f"Minimum values - g_A: {min_g_A}, g_H: {min_g_H}, rel_width: {min_width}")
+    #print(f"Maximum values - g_A: {max_g_A}, g_H: {max_g_H}, rel_width: {max_width}")
         
-    if mass < min_mass or mass > max_mass or clamped_width > max_width:
+    # if width is beyond the maximum then we don't exclude the point    
+    if clamped_width > max_width:
         excluded = False
-        result = 0.
+        result = -9999
     else:
-        result = interpolator(point)[0]
+        result = interpolator[mass](point)[0]
         excluded = result>cl_0p95
 
-    # define some additional default behavior depending on the values of g_A and g_H to prevent out of distribution evaluations
-    # if g_A and g_H are less than the minimum values then we don't exclude
-    min_g_A = df["g_A"].min()
-    min_g_H = df["g_H"].min()
-    max_g_A = df["g_A"].max()
-    max_g_H = df["g_H"].max()
-    if g_A < min_g_A and g_H < min_g_H:
-        excluded = False
-    # if only one of g_A or g_H is below the minimum then set it to the minimum value and re-evaluate
-    elif g_A < min_g_A:
-        g_A = min_g_A
-        point[2] = g_A
-        result = interpolator(point)[0]
-        excluded = result > cl_0p95
-    elif g_H < min_g_H:
-        g_H = min_g_H
-        point[3] = g_H
-        result = interpolator(point)[0]
-        excluded = result > cl_0p95
-    # if both are larger than the maximum values then exclude
-    elif g_A > max_g_A and g_H > max_g_H:
-        excluded = True
-    # if only one is larger than the maximum then set it to the maximum value and re-evaluate
-    elif g_A > max_g_A:
-        g_A = max_g_A
-        point[2] = g_A
-        result = interpolator(point)[0]
-        excluded = result > cl_0p95
-    elif g_H > max_g_H:
-        g_H = max_g_H
-        point[3] = g_H
-        result = interpolator(point)[0]
-        excluded = result > cl_0p95
-    return result, excluded
+        # define some additional default behavior depending on the values of g_A and g_H to prevent out of distribution evaluations
+        point_orig = point.copy()  # keep original point for debugging
+        # if g_A and g_H are less than the minimum values then we don't exclude
+        if g_A < min_g_A and g_H < min_g_H:
+            excluded = False
+            result = -9999.
+        # if only one of g_A or g_H is below the minimum then set it to the minimum value and re-evaluate
+        elif g_A < min_g_A:
+            g_A = min_g_A
+            point[1] = g_A
+            result = interpolator[mass](point)[0]
+            excluded = result > cl_0p95
+        elif g_H < min_g_H:
+            g_H = min_g_H
+            point[2] = g_H
+            result = interpolator[mass](point)[0]
+            excluded = result > cl_0p95
+        # if both are larger than the maximum values then exclude
+        elif g_A > max_g_A and g_H > max_g_H:
+            excluded = True
+            result = 9999
+        # if only one is larger than the maximum then set it to the maximum value and re-evaluate
+        elif g_A > max_g_A:
+            g_A = max_g_A
+            point[1] = g_A
+            result = interpolator[mass](point)[0]
+            excluded = result > cl_0p95
+        elif g_H > max_g_H:
+            g_H = max_g_H
+            point[2] = g_H
+            result = interpolator[mass](point)[0]
+            excluded = result > cl_0p95
 
+    # if after all this we still get a nan for the result we fall back to nearest neighbor interpolation
+    if np.isnan(result):
+        print(f"Warning: Interpolator returned NaN for mass {mass}, rel_width {rel_width}, g_A {g_A}, g_H {g_H}. Falling back to nearest neighbor interpolation.")
+        # use the nearest neighbor interpolator for this point
+        result = nearest_interpolator(point_orig)[0]
+        excluded = result > cl_0p95
+
+    return result, excluded
 
 if args.interp_method == 'nearest':
     name = 'interpolator_nearest'
 elif args.interp_method == 'linear':
     name = 'interpolator_linear'
-elif args.interp_method == 'NN':
-    name = 'interpolator_NN'
+elif args.interp_method == 'RBF':
+    name = 'interpolator_RBF'
 
-if args.test_rm_mass:
-    name += "_test_rm_mass"
-elif args.test_rm_width:
+name+=f"_{args.benchmark}"
+if args.test_rm_width:
     name += "_test_rm_width"
-elif args.test_rm_random:
-    name += "_test_rm_random"
+
 
 # check if interpolator*_data.pkl and interpolator*.pkl exist
 if (os.path.exists(f"{name}_data.pkl") and os.path.exists(f"{name}.pkl")) and not args.overwrite:
     print("Loading existing interpolator...")
 
-    df_clean = pd.read_pickle(f"{name}_data.pkl")
+    with open(f"{name}_data.pkl", "rb") as f:
+        df_clean, masses = pickle.load(f)
 
-    if args.interp_method == 'NN':
-        with open(f"{name}_model.pkl", "rb") as f:
-            model, scalar_x, scalar_y = pickle.load(f)
-        print("Loaded NN model and scalers.")
-    else:
-        with open(f"{name}.pkl", "rb") as f:
-            interpolator = pickle.load(f)
+    with open(f"{name}.pkl", "rb") as f:
+        interpolator_map = pickle.load(f)
     
 else:
     print("Loading YAML files and building interpolator...")
-    df = load_yaml_files_to_dataframe("yaml_files/XTottbarRun2/")
+    df, masses = load_yaml_files_to_dataframe("yaml_files/XTottbarRun2/")
     df_clean = df.dropna()
-    # print df when -2dNLL values are negative
-    if len(df_clean[df_clean["-2dNLL"] < 0]) > 0:
-        print("Warning: Negative -2dNLL values found:")
-        # sort the -ve values with largest absolute value first
-        df_negative = df_clean[df_clean["-2dNLL"] < 0].sort_values(by="-2dNLL", ascending=True)
-        print(df_negative)
-        # save the negative values to a separate file
-        df_negative.to_csv("negative_2dNLL_values.csv", index=False)
-    df_clean.to_pickle(f"{name}_data.pkl")
+
+    #store both df and masses to same pickle file
+    with open(f"{name}_data.pkl", "wb") as f:
+        pickle.dump((df_clean, masses), f)
     print(f"Loaded {len(df)} entries from YAML files.")
     print(f"Building interpolator...")
-    if args.interp_method == 'NN':
-        model, scaler_x, scaler_y = train_keras_nn(df_clean)
-        # save with pickle
-        with open(f"{name}_model.pkl", "wb") as f:
-            pickle.dump((model, scaler_x, scaler_y), f)
-    else:
-        interpolator = build_interpolator(df)
+    interpolator_map = build_interpolator(df, masses)
+    print("Finished building interpolator.")
 
-if args.interp_method == 'NN':
-    with open(f"{name}_model.pkl", "rb") as f:
-        model, scalar_x, scalar_y = pickle.load(f)
-    # define interpolator function for the NN model
-    def interpolator(point):
-        X = np.array([point])
-        X_scaled = scalar_x.transform(X)
-        # Use the NN model to predict the -2dNLL value
-        y_scaled = model.predict(X_scaled, verbose=0)
-        y = scalar_y.inverse_transform(y_scaled)
-        return y[0]
 
 # get MSSM benchmark file
 mssm_bm_file = f"root_files/{args.benchmark}_13.root"
@@ -381,64 +266,68 @@ h_rel_width_A = h_width_A.Clone('h_rel_width_A')
 h_rel_width_A.Divide(h_mass_A)
 
 # make a histogram which will store values of 1 when the point is excluded or 0 otherwise
-mA_range = (300,1000)
+
 tanb_range = (h_mass_A.GetYaxis().GetBinLowEdge(1),5)
-Nbins=100
+N_values=100
+# we want to evaluate every tanb value in tanb_range for N_values points
+tanb_values = np.linspace(tanb_range[0], tanb_range[1], N_values)
 
-h_excluded_exp = ROOT.TH2D('h_exp','',Nbins,mA_range[0],mA_range[1],Nbins,tanb_range[0],tanb_range[1])
-h_excluded_obs = ROOT.TH2D('h_obs','',Nbins,mA_range[0],mA_range[1],Nbins,tanb_range[0],tanb_range[1])
+import time
 
-count = 0
-for y in range(1,h_excluded_exp.GetNbinsY()+1):
-    for x in range(1,h_excluded_exp.GetNbinsX()+1):
+g_excluded_obs = ROOT.TGraph()
 
-        tanb = h_excluded_exp.GetYaxis().GetBinCenter(y)
-        mA   = h_excluded_exp.GetXaxis().GetBinCenter(x)
+for m in masses:
+    print(f"Processing mass {m} GeV...")
+    # get the interpolator for this mass
 
-        rel_width = h_rel_width_A.Interpolate(mA, tanb)
-        g_A = abs(h_g_A.Interpolate(mA, tanb)) # we take absolute values as H/A->ttbar search not sensitive to the sign
-        g_H = abs(h_g_H.Interpolate(mA, tanb))
+    for tanb in tanb_values:
+        #print(f"Processing tanb={tanb} for mass {m} GeV...")
+        rel_width = h_rel_width_A.Interpolate(m, tanb)
+        g_A = abs(h_g_A.Interpolate(m, tanb))
+        g_H = abs(h_g_H.Interpolate(m, tanb))
+        start_time = time.time()
+        est_nll, excluded = interpolate_nll(df_clean, interpolator_map, mass=m, rel_width=rel_width, g_A=g_A, g_H=g_H)
+        elapsed_time = time.time() - start_time
+        #print(f"mA={m}, tanb={tanb}, g_A={g_A}, g_H={g_H}, rel_width={rel_width}, -2dNLL={est_nll}, Excluded={excluded}, Time taken: {elapsed_time:.6f} seconds")
 
-        #TODO: for the NN this can be sped up by applying the model to an array of points instead of one by one
-        est_nll, excluded = interpolate_nll(df_clean, interpolator, mass=mA, rel_width=rel_width, g_A=g_A, g_H=g_H)
-        
-        h_excluded_obs.SetBinContent(x, y, int(excluded))
-        # no excluded version provided for now so just use observed as place holder
-        h_excluded_exp.SetBinContent(x, y, int(excluded))
-
-        # print the info every 1/1000 events randomly
-        rand = random.random()
-        if rand < 0.001:
-            print(f"mA={mA}, tanb={tanb}, g_A={g_A}, g_H={g_H}, rel_width={rel_width}, -2dNLL={est_nll}, Excluded={excluded}")
-        count += 1
+        # if point is excluded then add it to the graph
+        if excluded:
+            g_excluded_obs.SetPoint(g_excluded_obs.GetN(), m, tanb)
 
 # save the histograms
 name_extra=''
-if args.test_rm_mass:
-    name_extra = '_test_rm_mass'
-elif args.test_rm_width:
+
+if args.test_rm_width:
     name_extra = '_test_rm_width'
-elif args.test_rm_random:
-    name_extra = '_test_rm_random'
+
 fout = ROOT.TFile(f'{args.benchmark}_XToTTbar_mAtanb_contours_{args.interp_method}{name_extra}.root', 'recreate')
-# don't write expected contours since they are just a copy of the observed ones for now
-#h_excluded_exp.Write("h_exp_excluded")
-h_excluded_obs.Write("h_obs_excluded")
+# write the graph to the file
+g_excluded_obs.Write("g_obs_excluded")
 
-# get countours from 2D histograms 
-contours_obs = contourFromTH2(h_excluded_obs,1.,frameValue=0.)
-#contours_exp = contourFromTH2(h_excluded_exp,1.,frameValue=0.)
+# get max and min tanb excluded values for each mass point
+tanb_excluded_min = {}
+tanb_excluded_max = {}
+for i in range(g_excluded_obs.GetN()):
+    mA = g_excluded_obs.GetX()[i]
+    tanb = g_excluded_obs.GetY()[i]
+    if mA not in tanb_excluded_min:
+        tanb_excluded_min[mA] = tanb
+        tanb_excluded_max[mA] = tanb
+    else:
+        if tanb < tanb_excluded_min[mA]:
+            tanb_excluded_min[mA] = tanb
+        if tanb > tanb_excluded_max[mA]:
+            tanb_excluded_max[mA] = tanb
 
-# store integer indicating the number of contours on the output file
-n_contours = len(contours_obs)
-fout.WriteObject(ROOT.TParameter("int")("n_contours", n_contours), 'n_contours')
+contour_obs_0 = ROOT.TGraph()
+sorted_masses = sorted(tanb_excluded_min.keys())
+contour_obs_0.SetPoint(contour_obs_0.GetN(), sorted_masses[0], tanb_excluded_min[sorted_masses[0]])
 
-# sort countours them by the number of points in the graphs (largest first)
-contours_obs = sorted(contours_obs, key=lambda x: x.GetN(), reverse=True)
-#contours_exp = sorted(contours_exp, key=lambda x: x.GetN(), reverse=True)
+for mA in sorted_masses:
+    tanb_max = tanb_excluded_max[mA]
+    contour_obs_0.SetPoint(contour_obs_0.GetN(), mA, tanb_max)
+for mA in reversed(sorted_masses):
+    tanb_min = tanb_excluded_min[mA]
+    contour_obs_0.SetPoint(contour_obs_0.GetN(), mA, tanb_min)
 
-# now write all contours to the output file
-for i, c in enumerate(contours_obs):
-    c.Write(f'contour_obs_{i}')
-#for i, c in enumerate(contours_exp):
-#    c.Write(f'contour_exp_{i}')
+contour_obs_0.Write("contour_obs_0")
