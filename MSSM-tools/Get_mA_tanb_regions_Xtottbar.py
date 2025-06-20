@@ -22,6 +22,7 @@ parser.add_argument('--benchmark', type=str, default='mh125EFT', help='Benchmark
 parser.add_argument('--overwrite', action='store_true', help='Overwrite existing interpolator data')
 parser.add_argument('--interp_method', type=str, default='nearest', choices=['nearest','linear','NN'], help='Interpolation method to use')
 parser.add_argument('--test_rm_mass', action='store_true', help='Removes half of the mass points from the dataset for testing purposes')
+parser.add_argument('--test_rm_width', action='store_true', help='Removes half of the width points from the dataset for testing purposes')
 parser.add_argument('--test_rm_random', action='store_true', help='Removes half of the mass/width points randomly from the dataset for testing purposes')
 args = parser.parse_args()
 
@@ -111,6 +112,15 @@ def load_yaml_files_to_dataframe(directory):
             half_masses = [unique_masses[i] for i in range(len(unique_masses)) if i % 2 == 0]
             data = [row for row in data if row["mass"] not in half_masses]
             print(f"Removed half of the mass points for testing: {half_masses}")
+    elif args.test_rm_width:
+        # Remove half of the width points for testing
+        unique_widths = list(set(row["rel_width"] for row in data))
+        if len(unique_widths) > 1:
+            # remove odd indexes from the list of unique widths
+            print(f"Unique widths before removal: {unique_widths}")
+            half_widths = [unique_widths[i] for i in range(len(unique_widths)) if i % 2 == 1] # remove middle width (usually there are only 3 points provided)
+            data = [row for row in data if row["rel_width"] not in half_widths]
+            print(f"Removed half of the width points for testing: {half_widths}")
     elif args.test_rm_random:
         # Remove half of the mass/width points randomly for testing
         unique_points = list(set((row["mass"], row["rel_width"]) for row in data))
@@ -139,6 +149,8 @@ def build_interpolator(df):
 
     if args.test_rm_mass:
         name += "_test_rm_mass"
+    elif args.test_rm_width:
+        name += "_test_rm_width"
     elif args.test_rm_random:
         name += "_test_rm_random"
 
@@ -251,7 +263,7 @@ def interpolate_nll(df, interpolator, mass, rel_width, g_A, g_H):
     max_mass = df["mass"].max()
     max_width = df["rel_width"].max()
         
-    if mass < min_mass or mass > max_mass or clamped_width > min_width:
+    if mass < min_mass or mass > max_mass or clamped_width > max_width:
         excluded = False
         result = 0.
     else:
@@ -277,9 +289,9 @@ def interpolate_nll(df, interpolator, mass, rel_width, g_A, g_H):
         point[3] = g_H
         result = interpolator(point)[0]
         excluded = result > cl_0p95
-    # if both are larger than the maximum values then don't exclude
+    # if both are larger than the maximum values then exclude
     elif g_A > max_g_A and g_H > max_g_H:
-        excluded = False
+        excluded = True
     # if only one is larger than the maximum then set it to the maximum value and re-evaluate
     elif g_A > max_g_A:
         g_A = max_g_A
@@ -291,7 +303,6 @@ def interpolate_nll(df, interpolator, mass, rel_width, g_A, g_H):
         point[3] = g_H
         result = interpolator(point)[0]
         excluded = result > cl_0p95
-
     return result, excluded
 
 
@@ -304,6 +315,8 @@ elif args.interp_method == 'NN':
 
 if args.test_rm_mass:
     name += "_test_rm_mass"
+elif args.test_rm_width:
+    name += "_test_rm_width"
 elif args.test_rm_random:
     name += "_test_rm_random"
 
@@ -382,8 +395,7 @@ for y in range(1,h_excluded_exp.GetNbinsY()+1):
         tanb = h_excluded_exp.GetYaxis().GetBinCenter(y)
         mA   = h_excluded_exp.GetXaxis().GetBinCenter(x)
 
-        width = h_rel_width_A.Interpolate(mA, tanb)
-        rel_width = width/mA
+        rel_width = h_rel_width_A.Interpolate(mA, tanb)
         g_A = abs(h_g_A.Interpolate(mA, tanb)) # we take absolute values as H/A->ttbar search not sensitive to the sign
         g_H = abs(h_g_H.Interpolate(mA, tanb))
 
@@ -404,6 +416,8 @@ for y in range(1,h_excluded_exp.GetNbinsY()+1):
 name_extra=''
 if args.test_rm_mass:
     name_extra = '_test_rm_mass'
+elif args.test_rm_width:
+    name_extra = '_test_rm_width'
 elif args.test_rm_random:
     name_extra = '_test_rm_random'
 fout = ROOT.TFile(f'{args.benchmark}_XToTTbar_mAtanb_contours_{args.interp_method}{name_extra}.root', 'recreate')
