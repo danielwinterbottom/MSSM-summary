@@ -3,7 +3,7 @@
 
 TGraph* HIG_22_013_obs(bool filled){
   // get limits directly from ROOT file
-  TFile *f = new TFile("hMSSM_XToTTbar_mAtanb_contours_NN.root");
+  TFile *f = new TFile("hMSSM_XToTTbar_mAtanb_contours_linear.root");
   TGraph* graph = (TGraph*)f->Get("contour_obs_0");	
   return graph;
 }
