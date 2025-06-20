@@ -138,7 +138,7 @@ def build_interpolator(df, masses):
         interpolator_map[m] = interpolator
     print(f"Built interpolators for {len(interpolator_map)} mass points.")
 
-    name+='_alt'
+    name+=f"_{args.benchmark}"
     if args.test_rm_width:
         name += "_test_rm_width"
 
@@ -185,12 +185,12 @@ def interpolate_nll(df, interpolator, mass, rel_width, g_A, g_H):
         # if only one of g_A or g_H is below the minimum then set it to the minimum value and re-evaluate
         elif g_A < min_g_A:
             g_A = min_g_A
-            point[2] = g_A
+            point[1] = g_A
             result = interpolator[mass](point)[0]
             excluded = result > cl_0p95
         elif g_H < min_g_H:
             g_H = min_g_H
-            point[3] = g_H
+            point[2] = g_H
             result = interpolator[mass](point)[0]
             excluded = result > cl_0p95
         # if both are larger than the maximum values then exclude
@@ -200,12 +200,12 @@ def interpolate_nll(df, interpolator, mass, rel_width, g_A, g_H):
         # if only one is larger than the maximum then set it to the maximum value and re-evaluate
         elif g_A > max_g_A:
             g_A = max_g_A
-            point[2] = g_A
+            point[1] = g_A
             result = interpolator[mass](point)[0]
             excluded = result > cl_0p95
         elif g_H > max_g_H:
             g_H = max_g_H
-            point[3] = g_H
+            point[2] = g_H
             result = interpolator[mass](point)[0]
             excluded = result > cl_0p95
 
@@ -225,7 +225,7 @@ elif args.interp_method == 'linear':
 elif args.interp_method == 'RBF':
     name = 'interpolator_RBF'
 
-name+='_alt'
+name+=f"_{args.benchmark}"
 if args.test_rm_width:
     name += "_test_rm_width"
 
@@ -295,7 +295,7 @@ for m in masses:
             g_excluded_obs.SetPoint(g_excluded_obs.GetN(), m, tanb)
 
 # save the histograms
-name_extra='_alt'
+name_extra=''
 
 if args.test_rm_width:
     name_extra = '_test_rm_width'
