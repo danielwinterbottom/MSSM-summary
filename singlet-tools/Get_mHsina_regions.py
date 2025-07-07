@@ -86,6 +86,7 @@ for y in range(1,h_excluded_exp.GetNbinsY()+1):
         mH   = h_excluded_exp.GetXaxis().GetBinCenter(x)
 
         width = xsbr_tool.ComputeWidth(mH, args.tanb, sina)
+        if width/mH>0.1 and mH>130 and sina>-0.35 and sina<0.35: print(sina, mH, width, width/mH)
 
         obs = g_obs.Interpolate(mH, width)
         exp = g_exp.Interpolate(mH, width)

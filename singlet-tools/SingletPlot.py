@@ -6,6 +6,7 @@ from common import *
 import argparse
 ROOT.gROOT.SetBatch(True)
 import numpy as np
+import math
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--tanb', type=float, default=1.0, help='The value of tan(beta)')
@@ -21,11 +22,20 @@ f_hh = ROOT.TFile(f'singlet_tanb{tanb_str}_ggToHTohh_mHsina_contours.root')
 h_hh_obs = f_hh.Get('h_obs_excluded')
 h_hh_exp = f_hh.Get('h_exp_excluded')
 
-f_ww = ROOT.TFile(f'singlet_tanb{tanb_str}_ggToHToWW_mHsina_contours.root')
+f_ww = ROOT.TFile(f'singlet_tanb{tanb_str}_gg+vbfToHToWW_mHsina_contours.root')
 h_ww_obs = f_ww.Get('h_obs_excluded')
 h_ww_exp = f_ww.Get('h_exp_excluded')
 
-canv = squared_legend_to_right()
+h_ww_exp.GetYaxis().SetRangeUser(-0.35,0.35) 
+h_ww_obs.GetYaxis().SetRangeUser(-0.35,0.35) 
+
+h_zz_exp.GetYaxis().SetRangeUser(-0.35,0.35) 
+h_zz_obs.GetYaxis().SetRangeUser(-0.35,0.35)
+
+h_hh_exp.GetYaxis().SetRangeUser(-0.35,0.35)
+h_hh_obs.GetYaxis().SetRangeUser(-0.35,0.35)
+
+canv = squared_legend_to_right(lower_y=-0.35, upper_y=0.35)
 
 def DrawObsHist(hist, tcolor, lcolor):
     hist.SetStats(0)
@@ -57,10 +67,10 @@ def DrawExpHist(hist,lcolor):
 # take SM H125 measurments of inclusive mu from HIG-21-018 and use these to set a limit on sina
 # obs = 1.014 +0.055 -0.053
 low_lim = 1.014-0.053*2 # 95% lower limit
-sina_lim_obs = np.sin(np.acos(low_lim**.5)) # XS scales like sina^2. All partial widths scale by sina^2 so BRs will stay the same
+sina_lim_obs = np.sin(math.acos(low_lim**.5)) # XS scales like sina^2. All partial widths scale by sina^2 so BRs will stay the same
 
 low_lim = 1.00-0.053*2 # 95% lower limit
-sina_lim_exp = np.sin(np.acos(low_lim**.5)) # XS scales like sina^2. All partial widths scale by sina^2 so BRs will stay the same
+sina_lim_exp = np.sin(math.acos(low_lim**.5)) # XS scales like sina^2. All partial widths scale by sina^2 so BRs will stay the same
 
 g_sm_h_obs_up = ROOT.TGraph()
 g_sm_h_obs_up.SetPoint(0,0.,1.0)
@@ -107,8 +117,8 @@ PlotGraphObs(g_sm_h_obs_down, kComb.GetNumber(), tComb.GetNumber())
 PlotGraphExp(g_sm_h_exp_up, kCombDark.GetNumber())
 PlotGraphExp(g_sm_h_exp_down, kCombDark.GetNumber())
 
-g1=DrawObsHist(h_ww_obs, tYellow.GetNumber(),ROOT.kYellow+2)
-DrawExpHist(h_ww_exp, ROOT.kYellow+2)
+g1=DrawObsHist(h_ww_obs, tGreen.GetNumber(),ROOT.kGreen)
+DrawExpHist(h_ww_exp, ROOT.kGreen+2)
 
 g2=DrawObsHist(h_zz_obs, tMagenta.GetNumber(),ROOT.kMagenta)
 DrawExpHist(h_zz_exp, ROOT.kMagenta+2)
@@ -134,7 +144,7 @@ leg.AddEntry(exp, "#splitline{Expected}{exclusion 95% CL}", "L")
 
 leg.AddEntry(g1,"#splitline{H #rightarrow WW}{HIG-20-016}","F")
 leg.AddEntry(g2,"#splitline{H #rightarrow ZZ}{HIG-24-002}","F")
-leg.AddEntry(g3,"#splitline{H#rightarrow hh}{arXiv:2403.16926}","F")
+leg.AddEntry(g3,"#splitline{H#rightarrow hh}{#splitline{Phys. Rep. 1115}{(2025) 368}}","F")
 leg.AddEntry(g_sm_h_obs_up,"#splitline{h(125)}{HIG-21-018}","F")
 leg.Draw()
 

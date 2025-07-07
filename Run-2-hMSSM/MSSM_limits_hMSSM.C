@@ -43,15 +43,15 @@ void MSSM_limits_hMSSM(){
  Plotting (contours will be drawn on top of each other according to this order)
 
 -----------------------------------------------------------------------------*/
+  TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kGreen+2, kGreen, tGreen->GetNumber(), false);
   TGraph* g1 = Contour(HIG_17_031_exp, HIG_17_031_obs, kCombDark->GetNumber(), kComb->GetNumber(), tComb->GetNumber(),false); 
   leg0_->AddEntry(g1, "#splitline{h(125)}{EPJC 79 (2019) 421^{#scale[1.6]{ #club}}}", "F");
   TGraph* g2 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
   leg0_->AddEntry(g2, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73}", "F");
   TGraph* g7 = Contour(HIG_24_002_exp, HIG_24_002_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false);
   leg0_->AddEntry(g7, "#splitline{H #rightarrow ZZ}{HIG-24-002}", "F");
-  TGraph* g3 = Contour(HIG_22_013_exp, HIG_22_013_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
-  leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{JHEP 04 (2020) 171}", "F");
-  TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kCyan+2, kCyan, tCyan->GetNumber(), false);
+  TGraph* g3 = Contour(HIG_22_013_exp, HIG_22_013_obs, kCyan+2, kCyan, tCyan->GetNumber(), false); 
+  leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{HIG-22-013}", "F");
   leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{HIG-20-016}", "F");
   TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
   leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{#splitline{Phys. Rep. 1115}{(2025) 368}}", "F");
@@ -81,7 +81,8 @@ void MSSM_limits_hMSSM(){
   tex->SetTextSize(20);
   tex->DrawLatex(0.88, 0.057, "^{#scale[1.4]{#club}} 35.9 fb^{-1}");
   tex->DrawLatex(0.105, 0.057, "130");
-
+  
+  gPad->RedrawAxis();
   canv->Update();
   canv->Print("MSSM_limits_hMSSM.pdf");
   return;

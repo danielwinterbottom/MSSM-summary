@@ -41,29 +41,31 @@ void MSSM_limits_mh125EFT(){
 -----------------------------------------------------------------------------*/  
 
   /*-------------------------------------------------------------------------*/ 
+  TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
   TGraph* g1 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
   leg0_->AddEntry(g1, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73}", "F");
   TGraph* g2 = Contour(HIG_24_002_exp, HIG_24_002_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false);
   leg0_->AddEntry(g2, "#splitline{H #rightarrow ZZ}{HIG-24-002}", "F");
-  TGraph* g3 = Contour(HIG_22_013_exp, HIG_22_013_obs, kGreen+2, kGreen, tGreen->GetNumber(), false);
+  TGraph* g3 = Contour(HIG_22_013_exp, HIG_22_013_obs, kCyan+2, kCyan, tCyan->GetNumber(), false);
   leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{HIG-22-013}", "F");
-  TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kCyan+2, kCyan, tCyan->GetNumber(), false); 
   leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{HIG-20-016}", "F");
   TGraph* g5 = Contour(HIG_22_004_exp, HIG_22_004_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
-  leg0_->AddEntry(g5, "#splitline{A #rightarrow Zh (ll#tau#tau)}{HIG-22-004}", "F");
+  leg0_->AddEntry(g5, "#splitline{A #rightarrow Zh (ll#tau#tau)}{arXiv:2501.14825}", "F");
   TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
   leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{#splitline{Phys. Rep. 1115}{(2025) 368}}", "F");
 
   // eligibility line for the given benchmark
   TGraph* e1 = Eligibility();
-  e1->SetLineColor(kGray+1);
-  e1->SetLineWidth(1);
-  e1->SetLineStyle(1);
-  e1->SetLineWidth(2);
-  e1->SetFillColor(kGray);
-  e1->SetLineColor(kGray+1);
-  e1->SetFillStyle(1001);
+  e1->SetFillStyle(1001);    
+  e1->SetFillColor(kWhite);
+  e1->SetLineColor(kWhite);
   e1->Draw("FLsame");
+  TGraph* e1_clone = (TGraph*)e1->Clone();
+  e1_clone->SetFillStyle(3004);
+  e1_clone->SetLineColor(kBlack);
+  e1_clone->SetFillColor(kBlack);
+  e1_clone->SetLineWidth(2);
+  e1_clone->Draw("FLsame");
 
   TGraph* dummy = new TGraph();  
   dummy->SetFillColor(kWhite);
@@ -81,7 +83,7 @@ void MSSM_limits_mh125EFT(){
   leg1_->SetFillStyle (1001);
   leg1_->SetTextSize(0.025);
   leg1_->SetFillColor (kWhite);
-  leg1_->AddEntry(e1, "m_{h}^{MSSM}\\neq 125 \\pm 3 GeV", "F");  
+  leg1_->AddEntry(e1_clone, "m_{h}^{MSSM}\\neq 125 \\pm 3 GeV", "F");  
 
   TPaveText* extra = new TPaveText(0.585, 0.85, 0.685, 0.95, "NDC");
   extra->SetBorderSize(   0 );
@@ -96,6 +98,7 @@ void MSSM_limits_mh125EFT(){
   leg0_->Draw("same");
   leg1_->Draw("same");
 
+  gPad->RedrawAxis();
   canv->Update();
   canv->Print("MSSM_limits_mh125EFT.pdf");
   return;

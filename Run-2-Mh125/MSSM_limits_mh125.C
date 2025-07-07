@@ -95,6 +95,7 @@ void MSSM_limits_mh125(){
   leg0_->Draw("same");
   leg1_->Draw("same");
 
+  gPad->RedrawAxis();
   canv->Update();
   canv->Print("MSSM_limits_mh125.pdf");
   return;
