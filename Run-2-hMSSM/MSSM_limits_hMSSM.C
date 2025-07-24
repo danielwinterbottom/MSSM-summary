@@ -51,10 +51,10 @@ void MSSM_limits_hMSSM(){
   TGraph* g7 = Contour(HIG_24_002_exp, HIG_24_002_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false);
   leg0_->AddEntry(g7, "#splitline{H #rightarrow ZZ}{HIG-24-002}", "F");
   TGraph* g3 = Contour(HIG_22_013_exp, HIG_22_013_obs, kCyan+2, kCyan, tCyan->GetNumber(), false); 
-  leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{HIG-22-013}", "F");
+  leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{arXiv:2507.05119}", "F");
   leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{HIG-20-016}", "F");
   TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh}{#splitline{Phys. Rep. 1115}{(2025) 368}}", "F");
+  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh [resonant only]}{#splitline{Phys. Rep. 1115}{(2025) 368}}", "F");
 
 /*-----------------------------------------------------------------------------
 

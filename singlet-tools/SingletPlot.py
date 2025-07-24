@@ -27,16 +27,9 @@ f_ww = ROOT.TFile(f'singlet_tanb{tanb_str}_gg+vbfToHToWW_mHsina_contours.root')
 h_ww_obs = f_ww.Get('h_obs_excluded')
 h_ww_exp = f_ww.Get('h_exp_excluded')
 
-h_ww_exp.GetYaxis().SetRangeUser(-0.35,0.35) 
-h_ww_obs.GetYaxis().SetRangeUser(-0.35,0.35) 
+sina_limit = 0.4
 
-h_zz_exp.GetYaxis().SetRangeUser(-0.35,0.35) 
-h_zz_obs.GetYaxis().SetRangeUser(-0.35,0.35)
-
-h_hh_exp.GetYaxis().SetRangeUser(-0.35,0.35)
-h_hh_obs.GetYaxis().SetRangeUser(-0.35,0.35)
-
-canv = squared_legend_to_right(lower_y=-0.35, upper_y=0.35)
+canv = squared_legend_to_right(lower_y=-sina_limit, upper_y=sina_limit)
 
 def DrawObsHist(hist, tcolor, lcolor):
     hist.SetStats(0)
@@ -144,7 +137,7 @@ def DrawContourLabel(c, label_text):
     # then take the middle point
 
     x_min, x_max = 125,1000
-    y_min, y_max = 0, 0.35
+    y_min, y_max = 0, sina_limit
     points_in_range = []
     for i in range(c.GetN()):
         x, y = c_double(), c_double()
@@ -163,7 +156,7 @@ def DrawContourLabel(c, label_text):
         x, y = points_in_range[index]
 
         # Create and draw a label at that point
-        label = ROOT.TLatex(x-10, y-0.03, label_text)
+        label = ROOT.TLatex(x-10, y-0.045, label_text)
         # get angle based on the slope of the line
         if index > 0:
             x_prev, y_prev = points_in_range[index-10]
