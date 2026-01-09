@@ -65,7 +65,7 @@ TGraph* Contour(TGraph* exp(), TGraph* obs(bool), int dcolor, int lcolor, int tc
 }
 
 // Canvas for a squared central figure with legend to the right including "CMS and lumi" tag
-TCanvas* squared_legend_to_right(float lower_x=130., float upper_x=2100., float lower_y=1., float upper_y=60., int log_x=1, int log_y=1, bool preliminary=true, bool inc_partial_lum=true){
+TCanvas* squared_legend_to_right(float lower_x=130., float upper_x=2100., float lower_y=1., float upper_y=60., int log_x=1, int log_y=1, bool preliminary=true, bool inc_partial_lum=true, bool supplementary=false){
   TCanvas* canv = new TCanvas("MSSM", "MSSM Limits", 900, 640);
   canv->SetGridx(0); canv->SetLogx(log_x);
   canv->SetGridy(0); canv->SetLogy(log_y);
@@ -108,8 +108,13 @@ TCanvas* squared_legend_to_right(float lower_x=130., float upper_x=2100., float 
   if(preliminary){
     tex->SetTextFont(53);
     tex->SetTextSize(25);
-    tex->DrawLatex(0.19, 0.95, "Preliminary");
+    tex->DrawLatex(0.19, 0.95, "Supplementary");
   }
+  if(supplementary){
+    tex->SetTextFont(53);
+    tex->SetTextSize(25);
+    tex->DrawLatex(0.19, 0.95, "Supplementary");
+  } 
   tex->SetTextFont(42);
   tex->SetLineWidth(2);
   tex->SetTextSize(0.035);
