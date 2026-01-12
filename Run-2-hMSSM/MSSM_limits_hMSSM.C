@@ -34,7 +34,8 @@ void MSSM_limits_hMSSM(){
   exp->SetLineColor(1.); 
   exp->SetFillColor(1.); 
   exp->SetLineWidth(303); 
-  exp->SetFillStyle(3004);     
+  exp->SetFillStyle(3004);
+  exp->SetLineStyle(2);  
   leg0_->AddEntry(obs, "#splitline{Observed}{exclusion 95% CL}", "F");  
   leg0_->AddEntry(exp, "#splitline{Expected}{exclusion 95% CL}", "L");
   
@@ -43,13 +44,13 @@ void MSSM_limits_hMSSM(){
  Plotting (contours will be drawn on top of each other according to this order)
 
 -----------------------------------------------------------------------------*/
-  TGraph* g1 = Contour(HIG_21_018_exp, HIG_21_018_obs, kCombDark->GetNumber(), kComb->GetNumber(), tComb->GetNumber(),false); 
+  TGraph* g1 = Contour(HIG_21_018_exp, HIG_21_018_obs, kComb->GetNumber(), kComb->GetNumber(), tComb->GetNumber(),false); 
   leg0_->AddEntry(g1, "#splitline{h(125)}{This combination}", "F");
-  TGraph* g2 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
+  TGraph* g2 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue, kBlue, tBlue->GetNumber(), true); 
   leg0_->AddEntry(g2, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73}", "F");
-  TGraph* g3 = Contour(HIG_22_013_exp, HIG_22_013_obs, kCyan+2, kCyan, tCyan->GetNumber(), false); 
-  leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{arXiv:2507.05119}", "F");
-  TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
+  TGraph* g3 = Contour(HIG_22_013_exp, HIG_22_013_obs, kCyan, kCyan, tCyan->GetNumber(), false); 
+  leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{#splitline{Rep. Prog. Phys. 88}{(2025) 127801}}", "F");
+  TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed, kRed, tRed->GetNumber(), false); 
   leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh [resonant only]}{#splitline{Phys. Rep. 1115}{(2025) 368}}", "F");
 
 /*-----------------------------------------------------------------------------
