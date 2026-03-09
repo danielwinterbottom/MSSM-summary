@@ -99,11 +99,11 @@ void MSSM_limits_mh125EFT(){
   leg1_->Draw("same");
 
   TLatex* date_tex = new TLatex();
+  date_tex->SetTextFont(42);
+  date_tex->SetTextSize(0.038);
   date_tex->SetNDC();
   date_tex->SetTextAlign(11);
-  date_tex->SetTextFont(43);
-  date_tex->SetTextSize(20);
-  date_tex->DrawLatex(0.765, 0.95, "March 2026");
+  date_tex->DrawLatex(0.67, 0.95, "March 2026");  
 
   gPad->RedrawAxis();
   canv->Update();
