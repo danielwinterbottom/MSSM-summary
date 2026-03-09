@@ -98,6 +98,13 @@ void MSSM_limits_mh125EFT(){
   leg0_->Draw("same");
   leg1_->Draw("same");
 
+  TLatex* date_tex = new TLatex();
+  date_tex->SetNDC();
+  date_tex->SetTextAlign(11);
+  date_tex->SetTextFont(43);
+  date_tex->SetTextSize(20);
+  date_tex->DrawLatex(0.765, 0.95, "March 2026");
+
   gPad->RedrawAxis();
   canv->Update();
   canv->Print("MSSM_limits_mh125EFT.pdf");

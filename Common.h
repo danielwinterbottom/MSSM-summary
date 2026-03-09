@@ -43,7 +43,7 @@ TGraph* Contour(TGraph* exp(), TGraph* obs(bool), int dcolor, int lcolor, int tc
     g0->SetLineWidth(2);
     g0->SetFillStyle(0);
     g0->SetFillColor(dcolor);
-    g0->SetLineStyle(2);
+    g0->SetLineStyle(1);
     g0->Draw("Csame");
   }
   if(obs){
@@ -75,7 +75,7 @@ TCanvas* squared_legend_to_right(float lower_x=130., float upper_x=2100., float 
   canv->SetBottomMargin(0.10);  
   TH1F* hr=canv->DrawFrame(lower_x, lower_y, upper_x, upper_y);
   // define x-axis
-  hr->SetXTitle("m_{A} (GeV)");
+  hr->SetXTitle("m_{A} [GeV]");
   hr->GetXaxis()->SetLabelFont(42);
   hr->GetXaxis()->SetLabelSize(0.034);
   hr->GetXaxis()->SetLabelOffset(0.015);
@@ -108,7 +108,7 @@ TCanvas* squared_legend_to_right(float lower_x=130., float upper_x=2100., float 
   if(preliminary){
     tex->SetTextFont(53);
     tex->SetTextSize(25);
-    tex->DrawLatex(0.19, 0.95, "Supplementary");
+    tex->DrawLatex(0.19, 0.95, "Preliminary");
   }
   if(supplementary){
     tex->SetTextFont(53);
