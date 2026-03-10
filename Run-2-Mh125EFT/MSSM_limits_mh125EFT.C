@@ -1,10 +1,11 @@
 #include "../Common.h"
 #include "B2G-23-002.h"
 #include "HIG-18-005.h"
-#include "HIG-18-023.h"
-#include "HIG-17-033.h"
-#include "HIG-20-016.h"
 #include "HIG-21-001.h"
+#include "HIG-22-004.h"
+#include "HIG-20-016.h"
+#include "HIG-24-002.h"
+#include "HIG-22-013.h"
 #include "Eligibility.h"
 
 
@@ -17,57 +18,58 @@ void MSSM_limits_mh125EFT(){
   // switch off stats box
   gStyle->SetOptStat(0);
   // define canvas  
-  TCanvas* canv = squared_legend_to_right(90., 1400., 1., 10.);
-    // define legend
+  TCanvas* canv = squared_legend_to_right(90., 1400., 1., 10., 1, 1, true, false);
+  // define legend
   TLegend* leg0_ = new TLegend(0.67, 0.10, 0.97, 0.94);
   leg0_->SetBorderSize(1);
   leg0_->SetFillStyle (1001);
-  leg0_->SetTextSize(0.026);
+  leg0_->SetTextSize(0.034);
   leg0_->SetFillColor (kWhite);
   TGraph* obs = new TGraph(); obs->SetFillColor(kGray);
-  TGraph* exp = new TGraph(); 
-  exp->SetLineColor(1.); 
-  exp->SetFillColor(1.); 
-  exp->SetLineWidth(303); 
-  exp->SetFillStyle(3004);     
-  leg0_->AddEntry(obs, "Observed exclusion 95% CL", "F");  
-  leg0_->AddEntry(exp, "Expected exclusion 95% CL", "LF");
-  
+  TGraph* exp = new TGraph();
+  exp->SetLineColor(1.);
+  exp->SetFillColor(1.);
+  exp->SetLineWidth(303);
+  exp->SetFillStyle(3004);
+  leg0_->AddEntry(obs, "#splitline{Observed}{exclusion 95% CL}", "F");
+  leg0_->AddEntry(exp, "#splitline{Expected}{exclusion 95% CL}", "L");
+
 /*-----------------------------------------------------------------------------
 
  Plotting (contours will be drawn on top of each other according to this order)
 
 -----------------------------------------------------------------------------*/  
-  // eligibility line for the given benchmark
-  TGraph* e1 = Eligibility();
-  e1->SetLineColor(kGray+1);
-  e1->SetLineWidth(1);
-  e1->SetLineStyle(1);
-  e1->SetLineWidth(2);
-  e1->SetFillColor(kGray+1);  
-  e1->SetFillStyle(3002);//3005
-  e1->Draw("FLsame");
 
   /*-------------------------------------------------------------------------*/ 
+  TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
   TGraph* g1 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue+2, kBlue, tBlue->GetNumber(), true); 
-  leg0_->AddEntry(g1, "#splitline{A/H/h #rightarrow #tau#tau}{JHEP 07 (2023) 73^{#scale[1.6]{ #club}}}", "F");
-  //TGraph* g2 = Contour(HIG_17_033_exp, HIG_17_033_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
-  //leg0_->AddEntry(g2, "#splitline{H #rightarrow WW}{JHEP 03 (2020) 34}", "F");
-  TGraph* g2 = Contour(HIG_20_016_exp, HIG_20_016_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false); 
-  leg0_->AddEntry(g2, "#splitline{H #rightarrow WW(2l 2#nu)}{HIG-20-016^{#scale[1.6]{ #club}}}", "F");
-  //TGraph* g3 = Contour(HIG_18_005_exp, HIG_18_005_obs, kGreen+2, kGreen, tGreen->GetNumber(), false); 
-  //leg0_->AddEntry(g3, "#splitline{A #rightarrow ZH(bb)}{EPJ C79 (2019) 564}", "F");
-  TGraph* g4 = Contour(HIG_18_023_exp, HIG_18_023_obs, kRed+2, kRed, tRed->GetNumber(), false); 
-  leg0_->AddEntry(g4, "#splitline{A #rightarrow ZH(#tau#tau)}{JHEP 03 (2020) 65}", "F");
-  /*-------------------------------------------------------------------------*/ 
-  /* Preview B2G-23-002                                                      */
-  TGraph* g5 = Contour(B2G_23_002_exp, NULL, kYellow+2, kYellow, tYellow->GetNumber(), false); 
-  leg0_->AddEntry(g5 , "#splitline{H#rightarrow hh}{B2G-23-002^{#scale[1.6]{ #club}}}", "F");
-    
+  leg0_->AddEntry(g1, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73}", "F");
+  TGraph* g2 = Contour(HIG_24_002_exp, HIG_24_002_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false);
+  leg0_->AddEntry(g2, "#splitline{H #rightarrow ZZ}{HIG-24-002}", "F");
+  TGraph* g3 = Contour(HIG_22_013_exp, HIG_22_013_obs, kCyan+2, kCyan, tCyan->GetNumber(), false);
+  leg0_->AddEntry(g3, "#splitline{H/A #rightarrow t#bar{t}}{#splitline{Rep. Prog. Phys. 88}{(2025) 127801}}", "F");
+  leg0_->AddEntry(g4, "#splitline{H #rightarrow WW}{HIG-20-016}", "F");
+  TGraph* g5 = Contour(HIG_22_004_exp, HIG_22_004_obs, kYellow+2, kYellow+2, tYellowD->GetNumber(), false); 
+  leg0_->AddEntry(g5, "#splitline{A #rightarrow Zh (ll#tau#tau)}{JHEP 10 (2025) 74}", "F");
+  TGraph* g6 = Contour(B2G_23_002_exp, B2G_23_002_obs, kRed+2, kRed, tRed->GetNumber(), false); 
+  leg0_->AddEntry(g6 , "#splitline{H#rightarrow hh [resonant only]}{#splitline{Phys. Rep. 1115}{(2025) 368}}", "F");
+
+  // eligibility line for the given benchmark
+  TGraph* e1 = Eligibility();
+  e1->SetFillStyle(1001);    
+  e1->SetFillColor(kWhite);
+  e1->SetLineColor(kWhite);
+  e1->Draw("FLsame");
+  TGraph* e1_clone = (TGraph*)e1->Clone();
+  e1_clone->SetFillStyle(3004);
+  e1_clone->SetLineColor(kBlack);
+  e1_clone->SetFillColor(kBlack);
+  e1_clone->SetLineWidth(2);
+  e1_clone->Draw("FLsame");
+
   TGraph* dummy = new TGraph();  
   dummy->SetFillColor(kWhite);
   dummy->SetLineColor(kWhite);
-  leg0_->AddEntry(dummy, "", "F");  
   //leg0_->AddEntry(dummy, "", "F");  
   
 /*-----------------------------------------------------------------------------
@@ -79,9 +81,9 @@ void MSSM_limits_mh125EFT(){
   TLegend* leg1_ = new TLegend(0.14, 0.13, 0.34, 0.18);
   leg1_->SetBorderSize(1);
   leg1_->SetFillStyle (1001);
-  leg1_->SetTextSize(0.022464);
+  leg1_->SetTextSize(0.025);
   leg1_->SetFillColor (kWhite);
-  leg1_->AddEntry(e1, "m_{h}^{MSSM}\\neq 125 \\pm 3 GeV", "LF");  
+  leg1_->AddEntry(e1_clone, "m_{h}^{MSSM}\\neq 125 \\pm 3 GeV", "F");  
 
   TPaveText* extra = new TPaveText(0.585, 0.85, 0.685, 0.95, "NDC");
   extra->SetBorderSize(   0 );
@@ -94,15 +96,16 @@ void MSSM_limits_mh125EFT(){
   extra->Draw("same");  
 
   leg0_->Draw("same");
-  TLatex* tex;
-  tex = new TLatex();
-  tex->SetNDC();
-  tex->SetTextAlign(11);
-  tex->SetTextFont(43);
-  tex->SetTextSize(20);
-  tex->DrawLatex(0.88, 0.057, "^{#scale[1.4]{#club}} 138 fb^{-1}");
   leg1_->Draw("same");
 
+  TLatex* date_tex = new TLatex();
+  date_tex->SetTextFont(42);
+  date_tex->SetTextSize(0.038);
+  date_tex->SetNDC();
+  date_tex->SetTextAlign(11);
+  date_tex->DrawLatex(0.67, 0.95, "March 2026");  
+
+  gPad->RedrawAxis();
   canv->Update();
   canv->Print("MSSM_limits_mh125EFT.pdf");
   return;
