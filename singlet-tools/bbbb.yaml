@@ -1,0 +1,201 @@
+independent_variables:
+  - header:
+      name: $m_{X}$
+    values:
+      - value: 300.00
+      - value: 400.00
+      - value: 500.00
+      - value: 600.00
+      - value: 700.00
+      - value: 800.00
+      - value: 900.00
+      - value: 1000.00
+      - value: 1100.00
+      - value: 1200.00
+      - value: 1400.00
+      - value: 1600.00
+      - value: 1800.00
+      - value: 2000.00
+dependent_variables:
+  - header:
+      name: Expected limit, 68%
+      units: pb
+    qualifiers:
+      - name: POI
+        value: $\sigma$(pp $\rightarrow$ HH)
+    values:
+      - value: 11.94
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 5.40
+              minus: -3.54
+      - value: 3.20
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 1.42
+              minus: -0.95
+      - value: 1.062
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.460
+              minus: -0.307
+      - value: 0.554
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.236
+              minus: -0.160
+      - value: 0.373
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.158
+              minus: -0.108
+      - value: 0.262
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.112
+              minus: -0.076
+      - value: 0.185
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.079
+              minus: -0.054
+      - value: 0.152
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.066
+              minus: -0.044
+      - value: 0.125
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.054
+              minus: -0.037
+      - value: 0.130
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.057
+              minus: -0.038
+      - value: 0.176
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.079
+              minus: -0.052
+      - value: 0.213
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.098
+              minus: -0.064
+      - value: 0.232
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.115
+              minus: -0.072
+      - value: 0.253
+        errors:
+          - label: 68%
+            asymerror:
+              plus: 0.132
+              minus: -0.084
+  - header:
+      name: Expected limit, 95%
+      units: pb
+    qualifiers:
+      - name: POI
+        value: $\sigma$(pp $\rightarrow$ HH)
+    values:
+      - value: 11.9
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 12.7
+              minus: -5.7
+      - value: 3.20
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 3.27
+              minus: -1.52
+      - value: 1.06
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 1.05
+              minus: -0.50
+      - value: 0.554
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 0.540
+              minus: -0.260
+      - value: 0.373
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 0.360
+              minus: -0.175
+      - value: 0.262
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 0.252
+              minus: -0.123
+      - value: 0.185
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 0.180
+              minus: -0.087
+      - value: 0.152
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 0.149
+              minus: -0.072
+      - value: 0.125
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 0.124
+              minus: -0.059
+      - value: 0.130
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 0.131
+              minus: -0.062
+      - value: 0.176
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 0.182
+              minus: -0.084
+      - value: 0.213
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 0.231
+              minus: -0.103
+      - value: 0.232
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 0.271
+              minus: -0.116
+      - value: 0.253
+        errors:
+          - label: 95%
+            asymerror:
+              plus: 0.315
+              minus: -0.133

@@ -1,0 +1,46 @@
+#include "TGraph.h"
+#include "TFile.h"
+
+TGraph* HIG_20_016_obs(bool filled){
+ // get limits directly from ROOT file
+ TFile *f = new TFile("mh125EFT_ggToHToWW_mAtanb_contours.root");
+ TGraph* graph = (TGraph*)f->Get("contour_obs_0"); 
+
+  return graph;
+}
+
+TGraph* HIG_20_016_exp(){
+
+  TFile *f = new TFile("mh125EFT_ggToHToWW_mAtanb_contours.root");
+  TGraph* graph = (TGraph*)f->Get("contour_exp_0");
+
+  return graph;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
