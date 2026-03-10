@@ -45,7 +45,7 @@ void MSSM_limits_hMSSM(){
 -----------------------------------------------------------------------------*/
   TGraph* g4 = Contour(HIG_20_016_exp, HIG_20_016_obs, kGreen+2, kGreen, tGreen->GetNumber(), false);
   TGraph* g1 = Contour(HIG_21_018_exp, HIG_21_018_obs, kComb->GetNumber(), kComb->GetNumber(), tComb->GetNumber(),false); 
-  leg0_->AddEntry(g1, "#splitline{h(125)}{arXiv:2602.18611}", "F");
+  leg0_->AddEntry(g1, "#splitline{h(125)}{#splitline{arXiv:2602.18611}{sub. to ROPP}}", "F");
   TGraph* g2 = Contour(HIG_21_001_exp, HIG_21_001_obs, kBlue, kBlue, tBlue->GetNumber(), true); 
   leg0_->AddEntry(g2, "#splitline{H/A #rightarrow #tau#tau}{JHEP 07 (2023) 73}", "F");
   TGraph* g7 = Contour(HIG_24_002_exp, HIG_24_002_obs, kMagenta+2, kMagenta, tMagenta->GetNumber(), false);
