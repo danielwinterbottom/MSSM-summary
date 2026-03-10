@@ -1,0 +1,142 @@
+plot:
+  tanb: 4
+  output: "Singlet_limits_tanb{tanb}_date.pdf"
+  sina_limit: 0.4
+  legend_header: "tan#beta = 4"
+
+colors:
+  - name: "tYellow"
+    hex: "#ffa90e"
+    alpha: 0.15
+
+  - name: "tBlue"
+    hex: "#3f90da"
+    alpha: 0.15
+
+  - name: "tDeepBlue"
+    hex: "#1845fb"
+    alpha: 0.15
+
+  - name: "tCyan"
+    hex: "#92dadd"
+    alpha: 0.15
+
+  - name: "tOrange"
+    hex: "#e76300"
+    alpha: 0.15
+
+  - name: "tGray"
+    hex: "#94a4a2"
+    alpha: 0.15
+
+  - name: "tViolet"
+    hex: "#c849a9"
+    alpha: 0.15
+
+regions:
+  - file: "singlet_tanb{tanb}_gg+vbfToHToWW_mHsina_contours.root"
+    obs_name: "h_obs_excluded"
+    exp_name: "h_exp_excluded"
+    fill_color: "tGreen"
+    obs_line_color: "kGreen"
+    exp_line_color: "kGreen+2"
+    legend: "#splitline{H #rightarrow WW}{HIG-20-016}"
+
+  - file: "singlet_tanb{tanb}_ggToHToZZ_mHsina_contours.root"
+    obs_name: "h_obs_excluded"
+    exp_name: "h_exp_excluded"
+    fill_color: "tMagenta"
+    obs_line_color: "kMagenta"
+    exp_line_color: "kMagenta+2"
+    legend: "#splitline{H #rightarrow ZZ}{HIG-24-002}"
+
+  - file: "singlet_tanb{tanb}_ggToHTohh_mHsina_contours.root"
+    obs_name: "h_obs_excluded"
+    exp_name: "h_exp_excluded"
+    fill_color: "tRed"
+    obs_line_color: "kRed"
+    exp_line_color: "kRed+2"
+    legend: "#splitline{H#rightarrow hh [resonant only]}{#splitline{Phys. Rep. 1115}{(2025) 368}}"
+
+  # - file: "singlet_tanb{tanb}_ggToHTohh_bbbb_mHsina_contours.root"
+  #   obs_name: "h_obs_excluded"
+  #   exp_name: "h_exp_excluded"
+  #   fill_color: "tGreen"
+  #   obs_line_color: "kGreen"
+  #   exp_line_color: "kGreen+2"
+  #   legend: "#splitline{HH #rightarrow bbbb}{HIG-20-012}"
+
+  # - file: "singlet_tanb{tanb}_ggToHTohh_bbbb_boosted_mHsina_contours.root"
+  #   obs_name: "h_obs_excluded"
+  #   exp_name: "h_exp_excluded"
+  #   fill_color: "tMagenta"
+  #   obs_line_color: "kMagenta"
+  #   exp_line_color: "kMagenta+2"
+  #   legend: "#splitline{HH #rightarrow bbbb(boosted)}{B2G-21-003}"
+
+  # - file: "singlet_tanb{tanb}_ggToHTohh_bbgg_mHsina_contours.root"
+  #   obs_name: "h_obs_excluded"
+  #   exp_name: "h_exp_excluded"
+  #   fill_color: "tDeepBlue"
+  #   obs_line_color: "#1238d6"
+  #   exp_line_color: "#0b2ca8"
+  #   legend: "#splitline{HH #rightarrow bbgg}{HIG-21-011}"
+
+  # - file: "singlet_tanb{tanb}_ggToHTohh_bbtt_mHsina_contours.root"
+  #   obs_name: "h_obs_excluded"
+  #   exp_name: "h_exp_excluded"
+  #   fill_color: "tCyan"
+  #   obs_line_color: "#3fb8c4"
+  #   exp_line_color: "#2f8f99"
+  #   legend: "#splitline{HH #rightarrow bbtt}{HIG-20-014}"
+
+  # - file: "singlet_tanb{tanb}_ggToHTohh_bbww_mHsina_contours.root"
+  #   obs_name: "h_obs_excluded"
+  #   exp_name: "h_exp_excluded"
+  #   fill_color: "tRed"
+  #   obs_line_color: "kRed"
+  #   exp_line_color: "kRed+2"
+  #   legend: "#splitline{HH #rightarrow bbww}{HIG-21-005}"
+  #   xmax_draw: 800
+
+  # - file: "singlet_tanb{tanb}_ggToHTohh_multilepton_mHsina_contours.root"
+  #   obs_name: "h_obs_excluded"
+  #   exp_name: "h_exp_excluded"
+  #   fill_color: "tGray"
+  #   obs_line_color: "#7f8c8a"
+  #   exp_line_color: "#5f6b69"
+  #   legend: "#splitline{HH #rightarrow multilepton}{HIG-21-002}"
+
+  # - file: "singlet_tanb{tanb}_ggToHTohh_bbzz_mHsina_contours.root"
+  #   obs_name: "h_obs_excluded"
+  #   exp_name: "h_exp_excluded"
+  #   fill_color: "tViolet"
+  #   obs_line_color: "#b23aa0"
+  #   exp_line_color: "#87277a"
+  #   legend: "#splitline{HH #rightarrow bbzz}{B2G-24-022}"
+  
+
+
+
+bands:
+  - type: "h125_mu"
+    legend: "#splitline{h(125)}{#splitline{arXiv:2602.18611}{sub. to ROPP}}"
+    fill_color: "tComb"
+    obs_line_color: "kComb"
+    exp_line_color: "kCombDark"
+    obs_mu: 1.014
+    obs_err_down: 0.053
+    exp_mu: 1.0
+    exp_err_down: 0.053
+
+lines:
+  - type: "width_contour"
+    file: "singlet_widths.root"
+    pattern: "contours_0p05_tanb{tanb}_{i}"
+    max_count: 4
+    color: "kBlack"
+    width: 2
+    style: 5
+    label: "#Gamma_{H}/m_{H}<5%"
+
+    

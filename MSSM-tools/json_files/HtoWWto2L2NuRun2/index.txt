@@ -1,0 +1,10 @@
+Results taken from the PAS: https://cds.cern.ch/record/2803723/files/HIG-20-016-pas.pdf
+
+2DWidthOutput_SM_exp0.json = Figure 5 upper-left
+2DWidthOutput_SM_obs.json = Figure 5 upper-right
+2DWidthOutput_VBF_exp0.json = Figure 5 2nd-row-left
+2DWidthOutput_VBF_obs.json = Figure 5 2nd-row-right
+2DWidthOutput_ggH_exp0.json = Figure 5 3rd-row-left
+2DWidthOutput_ggH_obs.json = Figure 5 3rd-row-right
+2DWidthOutput_float_exp0.json= Figure 5 lower-left
+2DWidthOutput_float_obs.json = Figure 5 lower-right

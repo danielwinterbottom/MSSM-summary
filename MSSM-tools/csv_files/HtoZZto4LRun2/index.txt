@@ -1,0 +1,13 @@
+all csv files correspond to results from https://cds.cern.ch/record/2905051/files/HIG-24-002-pas.pdf
+
+ggF_NWA_Run2.csv  = Figure 8 upper-left
+VBF_NWA_Run2.csv  = Figure 8 upper-right
+all_NWA_Run2.csv  = Figure 8 lower
+ggF_W1_Run2.csv   = Figure 10 upper-right
+VBF_W1_Run2.csv   = Figure 10 upper-right
+ggF_W10_Run2.csv  = Figure 10 middle-left
+VBF_W10_Run2.csv  = Figure 10 middle-right
+ggF_W100_Run2.csv = Figure 10 lower-left
+VBF_W100_Run2.csv = Figure 10 lower-right
+ggF_2D_Run2.csv   = Figure 11 left
+VBF_2D_Run2.csv   = Figure 11 right
